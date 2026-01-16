@@ -516,15 +516,16 @@ sap.ui.define([
 		const done = assert.async();
 		const that = this;
 
-		assert.expect(5);
-
 		TableQUnitUtils.createTable({
 			enableBusyIndicator: true,
 			busyStateChanged: function(oEvent) {
 				if (oEvent.getParameter("busy")) {
 					that.assertState(assert, "On 'busyStateChanged' - State changed to true", {pendingRequests: true, busy: true});
+					assert.step("busy true");
 				} else {
 					that.assertState(assert, "On 'busyStateChanged' - State changed to false", {pendingRequests: false, busy: false});
+					assert.step("busy false");
+					assert.verifySteps(["busy true", "data requested", "data received", "busy false"]);
 					done();
 				}
 			},
@@ -533,9 +534,11 @@ sap.ui.define([
 				events: {
 					dataRequested: function() {
 						that.assertState(assert, "On 'dataRequested'", {pendingRequests: true, busy: true});
+						assert.step("data requested");
 					},
 					dataReceived: function() {
 						that.assertState(assert, "On 'dataReceived'", {pendingRequests: false, busy: true});
+						assert.step("data received");
 					}
 				}
 			}
@@ -548,16 +551,17 @@ sap.ui.define([
 		const done = assert.async();
 		const that = this;
 
-		assert.expect(6);
-
 		TableQUnitUtils.createTable({
 			enableBusyIndicator: true,
 			threshold: 0,
 			busyStateChanged: function(oEvent) {
 				if (oEvent.getParameter("busy")) {
 					that.assertState(assert, "On 'busyStateChanged' - State changed to true", {pendingRequests: true, busy: true});
+					assert.step("busy true");
 				} else {
 					that.assertState(assert, "On 'busyStateChanged' - State changed to false", {pendingRequests: false, busy: false});
+					assert.step("busy false");
+					assert.verifySteps(["busy true", "data requested", "data received", "data requested", "data received", "busy false"]);
 					done();
 				}
 			},
@@ -565,10 +569,10 @@ sap.ui.define([
 				path: "/Products",
 				events: {
 					dataRequested: function() {
-						that.assertState(assert, "On 'dataRequested'", {pendingRequests: true, busy: true});
+						assert.step("data requested");
 					},
 					dataReceived: function() {
-						that.assertState(assert, "On 'dataReceived'", {pendingRequests: false, busy: true});
+						assert.step("data received");
 						that.getTable().setFirstVisibleRow(1);
 					}
 				}
@@ -613,15 +617,16 @@ sap.ui.define([
 		const that = this;
 		let bRefreshed = false;
 
-		assert.expect(6);
-
 		TableQUnitUtils.createTable({
 			enableBusyIndicator: true,
 			busyStateChanged: function(oEvent) {
 				if (oEvent.getParameter("busy")) {
 					that.assertState(assert, "On 'busyStateChanged' - State changed to true", {pendingRequests: true, busy: true});
+					assert.step("busy true");
 				} else {
 					that.assertState(assert, "On 'busyStateChanged' - State changed to false", {pendingRequests: false, busy: false});
+					assert.step("busy false");
+					assert.verifySteps(["busy true", "data requested", "data received", "data requested", "data received", "busy false"]);
 					done();
 				}
 			},
@@ -629,10 +634,10 @@ sap.ui.define([
 				path: "/Products",
 				events: {
 					dataRequested: function() {
-						that.assertState(assert, "On 'dataRequested'", {pendingRequests: true, busy: true});
+						assert.step("data requested");
 					},
 					dataReceived: function() {
-						that.assertState(assert, "On 'dataReceived'", {pendingRequests: false, busy: true});
+						assert.step("data received");
 
 						if (!bRefreshed) {
 							bRefreshed = true;

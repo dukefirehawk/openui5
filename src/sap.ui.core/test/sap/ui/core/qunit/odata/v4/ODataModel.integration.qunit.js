@@ -48598,9 +48598,8 @@ make root = ${bMakeRoot}`;
 		 * @param {number} iRow - The first visible row
 		 * @param {number} [iSkip] - $skip for the request; no request if undefined
 		 * @param {number} [iTop] - $top for the request
-		 * @param {boolean} [bNoChangeEvents] - Whether no change events are to be expected
 		 */
-		const expect = (iRow, iSkip, iTop, bNoChangeEvents) => {
+		const expect = (iRow, iSkip, iTop) => {
 			if (iSkip !== undefined) {
 				const aElements = [];
 				for (let i = 0; i < iTop; i += 1) {
@@ -48616,10 +48615,8 @@ make root = ${bMakeRoot}`;
 						})
 					);
 			}
-			if (!bNoChangeEvents) {
-				for (let i = 0; i < 3; i += 1) {
-					this.expectChange("id", `E${iRow + i}`, iRow + i);
-				}
+			for (let i = 0; i < 3; i += 1) {
+				this.expectChange("id", `E${iRow + i}`, iRow + i);
 			}
 		};
 
@@ -48632,7 +48629,7 @@ make root = ${bMakeRoot}`;
 		 * @param {boolean} [bNoWait] - Whether to wait for request and changes
 		 */
 		const scroll = async (iRow, iSkip, iTop, bNoWait) => {
-			expect(iRow, iSkip, iTop, bNoWait);
+			expect(iRow, iSkip, iTop);
 			oTable.setFirstVisibleRow(iRow);
 
 			if (!bNoWait) {
@@ -48653,7 +48650,11 @@ make root = ${bMakeRoot}`;
 		await scroll(34);
 		await scroll(35);
 		scroll(37, 43, 5, true); // 5 after
-		await Promise.resolve();
+		// to avoid instable tests, wait at least 50ms (due to the throttling mechanism of the
+		// table) to ensure that the request is sent and the change events are fired;
+		// await Promise.resolve() cannot be used as it sometimes resolves in less than 50ms and
+		// sometimes it needs longer
+		await resolveLater(null, 50);
 		// this scroll happens before the response arrived, because we did not wait for the changes
 		await scroll(38);
 		// backward
@@ -48791,15 +48792,20 @@ make root = ${bMakeRoot}`;
 		assert.strictEqual(oGamma.getProperty("@$ui5.context.isTransient"), undefined, "not now");
 		assert.strictEqual(oGamma.created(), oGammaCreated);
 
-		// Note: due to threshold="4", Beta and Gamma are read now
-		this.expectRequest("EMPLOYEES('0.0')?$select=DrillState,ID,Name",
+		this.expectChange("name", [,,,, "Epsilon*", "Zeta*"])
+			// Note: due to threshold="4", Beta and Gamma are read now
+			.expectRequest("EMPLOYEES('0.0')?$select=DrillState,ID,Name",
 				{DrillState : "leaf", ID : "0.0", Name : "Beta*"})
 			.expectRequest("EMPLOYEES('0.1')?$select=DrillState,ID,Name",
 				{DrillState : "leaf", ID : "0.1", Name : "Gamma*"})
 			.expectChange("name", [,,, "Delta*", "Epsilon*"]);
 
 		oTable.setFirstVisibleRow(4);
-		await Promise.resolve();
+		// to avoid instable tests, wait at least 50ms (due to the throttling mechanism of the
+		// table) to ensure that the request is sent and the change events are fired;
+		// await Promise.resolve() cannot be used as it sometimes resolves in less than 50ms and
+		// sometimes it needs longer
+		await resolveLater(null, 50);
 		oTable.setFirstVisibleRow(3);
 
 		await this.waitForChanges(assert, "(7) quickly scroll to 4 and 3");
@@ -73925,7 +73931,10 @@ make root = ${bMakeRoot}`;
 			assert.strictEqual(oBinding.getLength(), 15);
 			assert.notOk(oBinding.isLengthFinal());
 
-			that.expectChange("id", ["TEAM_C", "TEAM_B", "TEAM_A", "TEAM_01", "TEAM_02"])
+			// #setProperty overtakes #create
+			that.expectChange("name", ["New Team A"])
+				.expectChange("name", ["New Team B"])
+				.expectChange("id", ["TEAM_C", "TEAM_B", "TEAM_A", "TEAM_01", "TEAM_02"])
 				.expectChange("name",
 					["New Team C", "New Team B", "New Team A", "Team #1", "Team #2"]);
 
@@ -74235,6 +74244,8 @@ make root = ${bMakeRoot}`;
 						// {Name : "Team 'B'", Team_Id : "TEAM_B"} // deleted on server
 					]
 				})
+				// refresh is ongoing, so created contexts start at index 0
+				.expectChange("name", ["Team 'A'"])
 				// prefetch compensates for exclusive filter (JIRA: CPOUI5ODATAV4-1521)
 				.expectRequest("#5 TEAMS?$count=true&$select=Name,Team_Id"
 					+ "&$filter=not (Team_Id eq 'TEAM_A' or Team_Id eq 'TEAM_B')&$skip=5&$top=9", {
