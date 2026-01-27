@@ -1,18 +1,24 @@
+/* ======================================= */
+/* CSS for control sap.ui.commons/ListBox  */
+/* base theme                              */
+/* ======================================= */
+
 @_sap_ui_commons_ListBox_BorderRadius: 0;
 
 .sapUiLbx {
 	box-sizing: border-box;
 	border: 1px solid @sapUiDarkBorder;
 	border-radius: @_sap_ui_commons_ListBox_BorderRadius;
-	background-color: @sapUiFieldBackground;
+	background-color: var(--sapField_Background);
 	display: inline-block;
 	padding: 1px 0;
 	cursor: default;
 	overflow-x: hidden;
 	overflow-y: auto;
 	white-space: nowrap;
-	-moz-user-select: none; /*disable ugly text selection - for other browsers the onselectstart event is used */
-	color: @sapUiBaseText;
+	-webkit-user-select: none;
+	user-select: none;
+	color: var(--sapTextColor);
 }
 
 .sapUiLbxSep {
@@ -28,7 +34,6 @@
 	height: 2px;
 	background-color: @sapUiMediumBorder;
 	background-clip: padding-box;
-	-webkit-background-clip: padding;
 }
 
 .sapUiLbxSep > hr:first-child {
@@ -42,18 +47,18 @@
 .sapUiLbxStd > ul > .sapUiLbxISel > span, /* Fix for IE10 bug - need to set the color on children as well */
 .sapUiLbxStd > ul > .sapUiLbxISel {
 	color: @sapUiTextSelection;
-	background-color: @sapUiHighlight;
+	background-color: var(--sapHighlightColor);
 }
 
 .sapUiLbxDis,
 .sapUiLbxIDis {
-	color: @sapUiContentDisabledTextColor;
+	color: var(--sapContent_DisabledTextColor);
 	border-color: @sapUiDarkBorder;
 }
 
 .sapUiLbxDis,
 .sapUiLbxStd > ul > .sapUiLbxIDis {
-	background-color: @sapUiFieldReadOnlyBackground;
+	background-color: var(--sapField_ReadOnly_Background);
 }
 
 .sapUiLbxDis > ul .sapUiLbxIIco > img,
@@ -62,7 +67,7 @@
 }
 
 .sapUiLbxRo {
-	background-color: @sapUiFieldReadOnlyBackground;
+	background-color: var(--sapField_ReadOnly_Background);
 }
 
 .sapUiLbxITxt {
@@ -102,10 +107,6 @@
 
 .sapUiLbxI > span:first-child {
 	padding-left: 6px;
-}
-
-html[data-sap-ui-browser^="ie"] .sapUiLbx.sapUiLbxFlexWidth > ul > li > span:last-child {
-	padding-right: 2px;
 }
 
 .sapUiLbx.sapUiLbxFlexWidth > ul > li > span:last-child {
