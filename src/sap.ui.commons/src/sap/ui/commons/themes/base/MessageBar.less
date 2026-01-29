@@ -1,9 +1,9 @@
-/* ================================================= */
-/* CSS for control sap.ui.commons/MessageBar.control */
-/* ================================================= */
-/*****************************************************/
-/*                 Base definitions                  */
-/*****************************************************/
+/* ========================================== */
+/* CSS for control sap.ui.commons/MessageBar  */
+/* base theme                                 */
+/* ========================================== */
+
+/* Base definitions */
 
 .sapUi-cursorPointer {
 	cursor: pointer;
@@ -15,7 +15,7 @@
 
 /* Icons have less padding within the Bar then they have within Messages... */
 .sapUiMsgBar .sapUiMsgIcon {
-	width: 16px; /* "width" with "position:center" seems more stable then "padding"... */
+	width: 16px; /* 'width' with 'position:center' seems more stable then 'padding'... */
 }
 
 /* .. and Texts come with right padding */
@@ -23,9 +23,8 @@
 	padding: 0 7px 0 1px;
 }
 
-/*****************************************************/
-/* Styling of the messageBar                         */
-/*****************************************************/
+/* Styling of the messageBar */
+
 .sapUiMsgBar {
 	background-color: #3355A8;
 	border-radius: 3px;
@@ -35,7 +34,7 @@
 
 /* Styling the Icons-Counters container: */
 .sapUiMsgBarSums {
-	background: url("img/messagebar/float_backgr.gif") repeat-x scroll 0px 0px transparent;
+	background: url('img/messagebar/float_backgr.gif') repeat-x scroll 0 0 transparent;
 	border: 1px solid #3355A8;
 	border-radius: 2px;
 	cursor: move;
@@ -52,7 +51,7 @@
 
 /* Styling the left Open-Hide arrow: */
 .sapUiMsgBarToggle {
-	background: url("img/messagebar/collapsed.gif") no-repeat scroll 0px 0px transparent;
+	background: url('img/messagebar/collapsed.gif') no-repeat scroll 0 0 transparent;
 	cursor: pointer;
 	display: inline-block;
 	height: 14px;
@@ -63,32 +62,15 @@
 }
 
 .sapUiRtl .sapUiMsgBarToggle {
-	background-image: url("img/messagebar/collapsedRTL.gif");
+	background-image: url('img/messagebar/collapsedRTL.gif');
 }
 
 .sapUiMsgBarOpen .sapUiMsgBarToggle,
 .sapUiRtl .sapUiMsgBarOpen .sapUiMsgBarToggle {
-	background-image: url("img/messagebar/expanded.gif");
+	background-image: url('img/messagebar/expanded.gif');
 }
 
-/*.sapUiMsgBar .sapUiImg {
-	padding: 0 2px;
-	vertical-align: top;
-}
-.sapUiMsgBarSums .sapUiImg {
-	outline-style: none;
-	vertical-align: middle;  As controls do not vertically align on their own
-}
-.sapUiMsgBarSums .sapUiTv {
-	padding: 0 5px 0 0;
-	vertical-align: middle;  As controls do not vertically align on their own
-}
- On RTL, the padding switches sides.
-.sapUiRtl .sapUiMsgBarSums .sapUiTv {
-	padding: 0 0 0 5px;
-}*/
-
-/* By default, not displaying the empty "(0)" levels: */
+/* By default, not displaying the empty '(0)' levels: */
 .sapUiMsgBarZeroCount {
 	display: none !important;
 }
@@ -99,7 +81,7 @@
 }
 
 .sapUiMsgBarHome {
-	background: url("img/messagebar/re-dock.gif") no-repeat scroll 0px 0px transparent;
+	background: url('img/messagebar/re-dock.gif') no-repeat scroll 0 0 transparent;
 	border: 1px solid transparent;
 	border-radius: 2px;
 	cursor: pointer;
@@ -111,7 +93,7 @@
 }
 
 .sapUiRtl .sapUiMsgBarHome {
-	background-image: url("img/messagebar/re-dockRTL.gif");
+	background-image: url('img/messagebar/re-dockRTL.gif');
 }
 
 .sapUiMsgBarHome:hover {

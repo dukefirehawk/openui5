@@ -4,16 +4,16 @@
 /* ========================================== */
 
 .sapUiMsgBar {
-	font-family: @sapUiDesktopFontFamily;
+	font-family: var(--sapFontFamily);
 	font-size: @sapUiDesktopFontSize;
-	background-color: @sapUiHighlight;
+	background-color: var(--sapHighlightColor);
 }
 
 /* Styling the Icons-Counters container: */
 .sapUiMsgBarSums {
 	background-color: darken(@sapUiContentForegroundColor, 10);
 	background-image: none;
-	border: 1px solid @sapUiContentForegroundBorderColor;
+	border: 1px solid var(--sapContent_ForegroundBorderColor);
 }
 
 .sapUiMsgBarOpen .sapUiMsgBarSums {
@@ -22,6 +22,6 @@
 }
 
 .sapUiMsgBarHome:hover {
-	background-color: @sapUiHighlight;
+	background-color: var(--sapHighlightColor);
 	border: 1px solid darken(@sapUiContentForegroundBorderColor, 25);
 }
