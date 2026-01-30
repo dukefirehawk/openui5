@@ -4,7 +4,7 @@
 /* ========================================= */
 
 .sapUiPag {
-	font-family: @sapUiDesktopFontFamily;
+	font-family: var(--sapFontFamily);
 	font-size: @sapUiDesktopFontSize;
 }
 
@@ -14,7 +14,7 @@
 
 .sapUiPag > .sapUiLnkDsbl,
 .sapUiPagPage > .sapUiLnkDsbl {
-	color: @sapUiContentDisabledTextColor;
+	color: var(--sapContent_DisabledTextColor);
 }
 
 .sapUiPagText {
@@ -22,7 +22,7 @@
 }
 
 .sapUiPagPage {
-	font-family: @sapUiDesktopFontFamily;
+	font-family: var(--sapFontFamily);
 	font-size: @sapUiDesktopFontSize;
 	height: 16px;
 	margin: 0 1px 0 0;
@@ -31,11 +31,11 @@
 
 .sapUiPagPage > .sapUiLnk,
 .sapUiPagPage > .sapUiLnkDsbl {
-	color: @sapUiContentForegroundTextColor;
+	color: var(--sapContent_ForegroundTextColor);
 }
 
 .sapUiPagBtn {
-	background-image: url(img/paginator/paginator.png);
+	background-image: url('img/paginator/paginator.png');
 	background-repeat: no-repeat;
 	height: 20px;
 	width: 20px;
@@ -44,26 +44,26 @@
 
 .sapUiPagBtn.sapUiLnk:hover,
 .sapUiPagPage:hover {
-	background-color: @sapUiHighlight;
+	background-color: var(--sapHighlightColor);
 }
 
 .sapUiPagPage:hover > .sapUiLnk {
-	color: @sapUiHighlightTextColor;
+	color: var(--sapHighlightTextColor);
 	text-decoration: none;
 }
 
 .sapUiPagCurrentPage:hover > a,
 .sapUiPagCurrentPage > a:hover,
 .sapUiPagCurrentPage:hover > .sapUiLnkDsbl {
-	border-color: @sapUiHighlight;
-	background-color: @sapUiHighlight;
-	color: @sapUiHighlightTextColor;
+	border-color: var(--sapHighlightColor);
+	background-color: var(--sapHighlightColor);
+	color: var(--sapHighlightTextColor);
 }
 
 .sapUiPagCurrentPage,
 .sapUiPagCurrentPage > .sapUiLnkDsbl {
-	border-color: @sapUiContentForegroundBorderColor;
-	background-color: @sapUiListSelectionBackgroundColor;
+	border-color: var(--sapContent_ForegroundBorderColor);
+	background-color: var(--sapList_SelectionBackgroundColor);
 	text-decoration: none;
 }
 
@@ -72,16 +72,16 @@
 }
 
 .sapUiPagPage:hover > a:focus {
-	outline-color: @sapUiContentContrastFocusColor;
+	outline-color: var(--sapContent_ContrastFocusColor);
 }
 
 .sapUiPagBtn.sapUiLnk:active,
 .sapUiPagPage:active {
-	background-color: @sapUiHighlight;
+	background-color: var(--sapHighlightColor);
 }
 
 .sapUiPagPage:active > .sapUiLnk {
-	color: @sapUiHighlightTextColor;
+	color: var(--sapHighlightTextColor);
 	text-decoration: none;
 }
 

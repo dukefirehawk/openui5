@@ -1,7 +1,7 @@
-/* ============================================= */
-/* CSS for control sap.ui.commons/Paginator      */
-/* BASE CSS                                      */
-/* ============================================= */
+/* ========================================= */
+/* CSS for control sap.ui.commons/Paginator  */
+/* base theme                                */
+/* ========================================= */
 
 .sapUiPag {
 	display: inline-block;
@@ -17,7 +17,7 @@
 }
 
 .sapUiPagBtn.sapUiLnkDsbl {
-	color: @sapUiBaseText;
+	color: var(--sapTextColor);
 }
 
 .sapUiPagFirst {
@@ -25,13 +25,13 @@
 }
 
 .sapUiPagBack {
-	background: url(img/paginator/arrow_previous.gif) no-repeat;
+	background: url('img/paginator/arrow_previous.gif') no-repeat;
 	background-position: left top;
 	padding-left: 14px;
 }
 
 .sapUiPagForward {
-	background: url(img/paginator/arrow_next.gif) no-repeat;
+	background: url('img/paginator/arrow_next.gif') no-repeat;
 	background-position: right top;
 	padding-right: 14px;
 }
@@ -75,5 +75,5 @@
 }
 
 .sapUiPagCurrentPage > .sapUiLnkDsbl {
-	color: @sapUiBaseText;
+	color: var(--sapTextColor);
 }
