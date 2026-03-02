@@ -1,7 +1,17 @@
 {
   "1.146.0": {
-    "date": "February 2026",
+    "date": "March 2026",
     "notes": [
+      {
+        "id": "9d928ec81583b02cd303ae3075c87eb44c9cfd42",
+        "type": "FIX",
+        "text": " sap.uxap.AnchorBar: Enable upperCaseAnchorBar property for Horizon theme"
+      },
+      {
+        "id": "9cdb5135794638439475d2ee163e6331f6537c62",
+        "type": "FIX",
+        "text": " sap.f.AvatarGroup: Improve Individual type layout and focus styling"
+      },
       {
         "id": "edce80d60e87b18e3293e65faec37c5c534cb919",
         "type": "FIX",

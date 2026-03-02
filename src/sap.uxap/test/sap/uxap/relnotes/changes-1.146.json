@@ -1,7 +1,17 @@
 {
   "1.146.0": {
-    "date": "February 2026",
+    "date": "March 2026",
     "notes": [
+      {
+        "id": "954682243b7622cd21dd70aeca6fbf9dae81f2ca",
+        "type": "FIX",
+        "text": " sap.uxap.ObjectPageSubSection: Aggregation binding issue fixed"
+      },
+      {
+        "id": "0dbe83b5c1fe999a999aceb7c5ccfd44b7dc2737",
+        "type": "FIX",
+        "text": " ObjectPageLayout: prevent endless loop in ResizeHandler callbacks"
+      },
       {
         "id": "bbf0f71df5b33dfa2c59cec18b0002bc8a1621ae",
         "type": "FIX",

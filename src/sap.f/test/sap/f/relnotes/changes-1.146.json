@@ -1,7 +1,12 @@
 {
   "1.146.0": {
-    "date": "February 2026",
+    "date": "March 2026",
     "notes": [
+      {
+        "id": "9cdb5135794638439475d2ee163e6331f6537c62",
+        "type": "FIX",
+        "text": " sap.f.AvatarGroup: Improve Individual type layout and focus styling"
+      },
       {
         "id": "b93c5f9787a1df04160ba2f9c2c54f3ebc6e9a14",
         "type": "FIX",

@@ -1,7 +1,17 @@
 {
   "1.146.0": {
-    "date": "February 2026",
+    "date": "March 2026",
     "notes": [
+      {
+        "id": "0d3526fa16bae41256e15a9965eae1856f449bef",
+        "type": "FEATURE",
+        "text": " Bound Filters support filter API"
+      },
+      {
+        "id": "64edc2323157f6ee70e16e376856bddf367857e5",
+        "type": "FIX",
+        "text": " sap.ui.test.autoWaiter: test fixed to use specific waiter API"
+      },
       {
         "id": "0e03e6368726c43215dd96c053316a2496e02d0d",
         "type": "FIX",
@@ -11,6 +21,11 @@
         "id": "66b3c6464411080494850f373154e96707fac498",
         "type": "FEATURE",
         "text": " OPA: keyDown and keyUp events to Press action are introduced"
+      },
+      {
+        "id": "5faf42d57e2ab8b140ba79dd3c53ca1cd253c675",
+        "type": "FIX",
+        "text": " sap.m.Popover: The height of the control is now fixed in Safari"
       },
       {
         "id": "66dad585ff4df2821255cf43bf59d19c8b189c7b",

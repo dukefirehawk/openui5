@@ -1,11 +1,71 @@
 {
   "1.146.0": {
-    "date": "February 2026",
+    "date": "March 2026",
     "notes": [
+      {
+        "id": "bc50a68bb01ddaf0b4a7cfaecda91e52fae296d9",
+        "type": "FIX",
+        "text": " We've now fixed a jump issue in the header container by using an outline instead of a border"
+      },
+      {
+        "id": "7d035b1dd4219042b0f9f60f2f2d88c74638fc81",
+        "type": "FIX",
+        "text": " sap.m.Tokenizer: Keep n-more popover open on item delete"
+      },
+      {
+        "id": "7077ae4ee2b9e6b77b3b8bcc316a5b0fdd08efde",
+        "type": "FIX",
+        "text": " sap.m.SegmentedButton: add optional chain operator to clone method"
+      },
+      {
+        "id": "12f4b40fb5f26901c2152d4d81badbc7a902362f",
+        "type": "FIX",
+        "text": " VariantManagement: variant not deleted if text changed"
+      },
+      {
+        "id": "66dd3cb428a60ef0b90a912026fbefebc477fd6c",
+        "type": "FIX",
+        "text": " sap.ui.unified.Calendar: wrong aria-describedby attribute"
+      },
+      {
+        "id": "8438de05d4ea5c3bd1f85cbf28689c5289c8282b",
+        "type": "FIX",
+        "text": " sap.m.MenuButton: fixed dialog displacement on mobile devices"
+      },
+      {
+        "id": "555955e9182971e7e526cac655dbf20540b1c931",
+        "type": "FIX",
+        "text": " sap.m.MultiInput: Tokenizer is scrolled to the end on focus"
+      },
+      {
+        "id": "d69fa2cc7bf08bf253a6001c14e690e59d120490",
+        "type": "FIX",
+        "text": " sap.m.DateRangeSelection, DatePicker: onescape works correctly"
+      },
+      {
+        "id": "66687f110642b60444c50f073b93ec8e966c8742",
+        "type": "FIX",
+        "text": "p13n.SelectionPanel: fix hover buttons"
+      },
+      {
+        "id": "0b17045ddd21b3d73a4c20e31a1353210aef3bd2",
+        "type": "FIX",
+        "text": " sap.m.Breadcrumbs: Enable text wrapping in overflow popover"
+      },
       {
         "id": "21d632ce9252204a06018b83ae843ace22a00be4",
         "type": "FIX",
         "text": " sap.m.MultiInput: Select all (ctrl+a) now selects the input text instead of all tokens"
+      },
+      {
+        "id": "884ac67e70cc89accb447c3f83a9ef48b3433fe7",
+        "type": "FIX",
+        "text": " sap.m.TableSelectDialog: Initial focus is now set to the correct item"
+      },
+      {
+        "id": "5faf42d57e2ab8b140ba79dd3c53ca1cd253c675",
+        "type": "FIX",
+        "text": " sap.m.Popover: The height of the control is now fixed in Safari"
       },
       {
         "id": "6ce3285134dd41439195a1b405cd64d0093717a0",

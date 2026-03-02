@@ -1,7 +1,12 @@
 {
   "1.146.0": {
-    "date": "February 2026",
+    "date": "March 2026",
     "notes": [
+      {
+        "id": "66dd3cb428a60ef0b90a912026fbefebc477fd6c",
+        "type": "FIX",
+        "text": " sap.ui.unified.Calendar: wrong aria-describedby attribute"
+      },
       {
         "id": "ecc4767d3c4abaeea582052ff772d27853f37832",
         "type": "FIX",
