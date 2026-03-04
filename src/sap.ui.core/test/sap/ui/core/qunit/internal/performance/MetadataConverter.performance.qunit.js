@@ -26,7 +26,7 @@ sap.ui.define([
 			"/fake/v4/$metadata" : {source : "v4/metadata.xml"},
 			"/fake/v4vh/$metadata" : {source : "v4vh/metadata.xml"}
 		},
-		oSandbox = sinon.sandbox.create();
+		oSandbox = sinon.createSandbox();
 
 	// Since useFakeServer loads all sources from the fixture in advance, call it here and not in
 	// beforeEach
