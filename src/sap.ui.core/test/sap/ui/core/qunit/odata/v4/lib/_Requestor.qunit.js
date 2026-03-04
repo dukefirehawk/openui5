@@ -1334,7 +1334,7 @@ sap.ui.define([
 		var sTitle = "request: sGroupId=" + sGroupId + ", sap-statistics=" + vStatistics;
 
 		QUnit.test(sTitle, function (assert) {
-			var fnCancel = this.spy(),
+			var fnCancel = sinon.spy(),
 				oGroupLock,
 				oPayload = {foo : 42},
 				oPromise,
@@ -1345,7 +1345,7 @@ sap.ui.define([
 				sResourcePath = vStatistics
 					? "~Employees~?custom=value&sap-statistics=false"
 					: "~Employees~?custom=value",
-				fnSubmit = this.spy();
+				fnSubmit = sinon.spy();
 
 			oRequestor.vStatistics = vStatistics;
 			if (sGroupId) {
@@ -2682,22 +2682,22 @@ sap.ui.define([
 					url : "Products"
 				})
 			],
-			fnMergePatch0 = this.spy(),
+			fnMergePatch0 = sinon.spy(),
 			fnMergePatch1 = "~mergePatchRequests~",
 			fnMergePatch2 = this.stub(),
 			fnMergePatch3 = this.stub(),
-			fnMergePatch4 = this.spy(),
+			fnMergePatch4 = sinon.spy(),
 			fnMergePatch5 = this.stub(),
-			fnMergePatch6 = this.spy(),
+			fnMergePatch6 = sinon.spy(),
 			fnMergePatch7 = this.stub(),
 			fnMergePatch8 = this.stub(),
 			aPromises = [],
 			oRequestor = _Requestor.create("/", oModelInterface, {}, {}, "4.0"),
-			fnSubmit0 = this.spy(),
-			fnSubmit1 = this.spy(),
-			fnSubmit2 = this.spy(),
-			fnSubmit3 = this.spy(),
-			fnSubmit4 = this.spy();
+			fnSubmit0 = sinon.spy(),
+			fnSubmit1 = sinon.spy(),
+			fnSubmit2 = sinon.spy(),
+			fnSubmit3 = sinon.spy(),
+			fnSubmit4 = sinon.spy();
 
 		fnMergePatch2.returns("~oOldValue02~");
 		fnMergePatch3.returns("~oOldValue03~");
@@ -3187,7 +3187,7 @@ sap.ui.define([
 			}],
 			oError0 = new Error("0"),
 			oError1 = new Error("1"),
-			fnMergePatch0 = this.spy(),
+			fnMergePatch0 = sinon.spy(),
 			fnMergePatch1 = this.stub(),
 			oProduct = {},
 			aPromises = [],
@@ -3656,9 +3656,9 @@ sap.ui.define([
 
 	//*****************************************************************************************
 	QUnit.test("cancelChanges: various requests", function (assert) {
-		var fnCancel1 = this.spy(),
-			fnCancel2 = this.spy(),
-			fnCancel3 = this.spy(),
+		var fnCancel1 = sinon.spy(),
+			fnCancel2 = sinon.spy(),
+			fnCancel3 = sinon.spy(),
 			fnCancelPost1 = this.stub().returns(false),
 			fnCancelPost2 = this.stub().returns(true),
 			iCount = 1,
@@ -3907,7 +3907,7 @@ sap.ui.define([
 
 	//*****************************************************************************************
 	QUnit.test("removeChangeRequest", function (assert) {
-		var fnCancel = this.spy(),
+		var fnCancel = sinon.spy(),
 			oPromise,
 			oRequestor = _Requestor.create("/Service/", oModelInterface, {}, {}, "4.0"),
 			oTestPromise;
@@ -3930,7 +3930,7 @@ sap.ui.define([
 
 	//*****************************************************************************************
 	QUnit.test("removeChangeRequest: various requests", function (assert) {
-		var fnCancel = this.spy(),
+		var fnCancel = sinon.spy(),
 			aExpectedRequests = [
 				sinon.match({
 					method : "PATCH",
@@ -4006,8 +4006,8 @@ sap.ui.define([
 	//*****************************************************************************************
 	QUnit.test("removePost", function (assert) {
 		var oBody = {},
-			fnCancel1 = this.spy(),
-			fnCancel2 = this.spy(),
+			fnCancel1 = sinon.spy(),
+			fnCancel2 = sinon.spy(),
 			oEntity = {},
 			aExpectedRequests = [
 				sinon.match({
@@ -4056,7 +4056,7 @@ sap.ui.define([
 	//*****************************************************************************************
 	QUnit.test("removePost with only one POST", function (assert) {
 		var oBody = {},
-			fnCancel = this.spy(),
+			fnCancel = sinon.spy(),
 			oEntity = {},
 			oRequestor = _Requestor.create("/Service/", oModelInterface, {}, {}, "4.0"),
 			oTestPromise;
@@ -4699,7 +4699,7 @@ sap.ui.define([
 	}].forEach(function (oFixture, i) {
 		QUnit.test("doCheckVersionHeader, success cases - " + i, function (assert) {
 			var oRequestor = _Requestor.create("/", null, {}, {}, "4.0"),
-				fnGetHeader = this.spy(function (sHeaderKey) {
+				fnGetHeader = sinon.spy(function (sHeaderKey) {
 					return oFixture.mHeaders[sHeaderKey];
 				});
 
@@ -4721,7 +4721,7 @@ sap.ui.define([
 ["4.0", "4.01"].forEach(function (sODataVersion) {
 	QUnit.test("doCheckVersionHeader, 4.01 vs. " + sODataVersion, function (assert) {
 		var oRequestor = _Requestor.create("/", null, {}, {}, "4.01"),
-			fnGetHeader = this.spy(function () {
+			fnGetHeader = sinon.spy(function () {
 				return sODataVersion;
 			});
 
@@ -4752,7 +4752,7 @@ sap.ui.define([
 	}].forEach(function (oFixture, i) {
 		QUnit.test("doCheckVersionHeader, error cases - " + i, function (assert) {
 			var oRequestor = _Requestor.create("/", null, {}, {}, "4.0"),
-				fnGetHeader = this.spy(function (sHeaderKey) {
+				fnGetHeader = sinon.spy(function (sHeaderKey) {
 					return oFixture.mHeaders[sHeaderKey];
 				});
 

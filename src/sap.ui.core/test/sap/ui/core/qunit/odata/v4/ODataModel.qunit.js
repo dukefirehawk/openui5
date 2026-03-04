@@ -2512,14 +2512,14 @@ sap.ui.define([
 	//*********************************************************************************************
 	QUnit.test("addPrerenderingTask: rendering before 1st setTimeout", function (assert) {
 		var oAddTaskMock,
-			fnFirstTask = this.spy(),
-			fnLastTask = this.spy(),
+			fnFirstTask = sinon.spy(),
+			fnLastTask = sinon.spy(),
 			oModel = this.createModel("", {}, true),
-			fnPrerenderingTask0 = this.spy(function () {
+			fnPrerenderingTask0 = sinon.spy(function () {
 				assert.notStrictEqual(oModel.aPrerenderingTasks, null);
 				oModel.addPrerenderingTask(fnFirstTask, /*bFirst*/true);
 			}),
-			fnPrerenderingTask1 = this.spy(function () {
+			fnPrerenderingTask1 = sinon.spy(function () {
 				oModel.addPrerenderingTask(fnLastTask);
 			});
 
@@ -2559,7 +2559,7 @@ sap.ui.define([
 		var oAddTaskExpectation,
 			oModel = this.createModel("", {}, true),
 			oSetTimeoutExpectation,
-			fnTask = this.spy(),
+			fnTask = sinon.spy(),
 			oWindowMock = this.mock(window);
 
 		oAddTaskExpectation = this.mock(Rendering).expects("addPrerenderingTask")
@@ -2591,7 +2591,7 @@ sap.ui.define([
 		var oAddTaskExpectation,
 			oModel = this.createModel("", {}, true),
 			oSetTimeoutExpectation,
-			fnTask1 = this.spy(),
+			fnTask1 = sinon.spy(),
 			fnTask2 = "~task~2~";
 
 		oAddTaskExpectation = this.mock(Rendering).expects("addPrerenderingTask").twice()

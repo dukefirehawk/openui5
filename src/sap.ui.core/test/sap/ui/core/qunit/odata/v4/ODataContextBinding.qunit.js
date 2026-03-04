@@ -2809,7 +2809,7 @@ sap.ui.define([
 				oDestroyExpectation,
 				oEntity = bNoDataRead ? undefined : {},
 				oExpectation,
-				fnGetEntity = this.spy(function () {
+				fnGetEntity = sinon.spy(function () {
 					return oEntity;
 				}),
 				fnGetOriginalResourcePath,
@@ -4036,7 +4036,7 @@ sap.ui.define([
 	//*********************************************************************************************
 	QUnit.test("refreshInternal: deleted relative binding", function (assert) {
 		var oBinding = this.bindContext("relative", Context.create(this.oModel, {}, "/foo")),
-			fnOnRefresh = this.spy(function (oEvent) {
+			fnOnRefresh = sinon.spy(function (oEvent) {
 				var oElementContext = oBinding.getBoundContext();
 
 				assert.strictEqual(oEvent.getParameter("reason"), ChangeReason.Refresh);
@@ -5540,8 +5540,8 @@ sap.ui.define([
 			oFetchPromise2 = Promise.reject("~oError2~"),
 			oHelperMock = this.mock(_Helper),
 			oModelMock = this.mock(this.oModel),
-			fnReporter1 = this.spy(),
-			fnReporter2 = this.spy();
+			fnReporter1 = sinon.spy(),
+			fnReporter2 = sinon.spy();
 
 		this.oModel.bAutoExpandSelect = true;
 		oBinding.oContext = oContext;
