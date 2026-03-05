@@ -53731,8 +53731,8 @@ make root = ${bMakeRoot}`;
 	// Read side effects which include navigation properties while there are pending changes.
 	// JIRA: CPOUI5UISERVICESV3-1193
 	QUnit.test("bound operation: $$inheritExpandSelect", function (assert) {
-		var fnDataReceived = this.spy(),
-			fnDataRequested = this.spy(),
+		var fnDataReceived = sinon.spy(),
+			fnDataRequested = sinon.spy(),
 			oJustAMessage = {
 				code : "23",
 				message : "Just A Message",

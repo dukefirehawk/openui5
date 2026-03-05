@@ -857,7 +857,7 @@ sap.ui.define([
 		 */
 		function invokeTest(sCurrentTitle, aExpectedResultHandlerCalls, bSorted) {
 			QUnit.test(sCurrentTitle, function (assert) {
-				var fnResultHandlerSpy = this.spy(),
+				var fnResultHandlerSpy = sinon.spy(),
 					oRequestor = {};
 
 				asV2Requestor(oRequestor);
@@ -963,7 +963,7 @@ sap.ui.define([
 	QUnit.test("doConvertSystemQueryOptions: $filter", function () {
 		var sFilter = "foo eq 'bar'",
 			oRequestor = {},
-			fnResultHandlerSpy = this.spy();
+			fnResultHandlerSpy = sinon.spy();
 
 		asV2Requestor(oRequestor);
 
@@ -1421,7 +1421,7 @@ sap.ui.define([
 	}].forEach(function (oFixture, i) {
 		QUnit.test("doCheckVersionHeader, success cases - " + i, function (assert) {
 			var oRequestor = _Requestor.create("/", {}, {}, {}, "2.0"),
-				fnGetHeader = this.spy(function (sHeaderKey) {
+				fnGetHeader = sinon.spy(function (sHeaderKey) {
 					return oFixture.mHeaders[sHeaderKey];
 				});
 
@@ -1453,7 +1453,7 @@ sap.ui.define([
 	}].forEach(function (oFixture, i) {
 		QUnit.test("doCheckVersionHeader, error cases - " + i, function (assert) {
 			var oRequestor = _Requestor.create("/", {}, {}, {}, "2.0"),
-				fnGetHeader = this.spy(function (sHeaderKey) {
+				fnGetHeader = sinon.spy(function (sHeaderKey) {
 					return oFixture.mHeaders[sHeaderKey];
 				});
 
@@ -1730,7 +1730,7 @@ sap.ui.define([
 
 	//*****************************************************************************************
 	QUnit.test("reportTransitionMessages does not call model", function (assert) {
-		var fnreportTransitionMessages = this.spy(),
+		var fnreportTransitionMessages = sinon.spy(),
 			oModelInterface = {reportTransitionMessages : fnreportTransitionMessages},
 			oRequestor = _Requestor.create("/", oModelInterface, {}, {}, "2.0");
 
@@ -1742,7 +1742,7 @@ sap.ui.define([
 
 	//*****************************************************************************************
 	QUnit.test("reportStateMessages does not call model", function (assert) {
-		var fnreportStateMessages = this.spy(),
+		var fnreportStateMessages = sinon.spy(),
 			oModelInterface = {reportStateMessages : fnreportStateMessages},
 			oRequestor = _Requestor.create("/", oModelInterface, {}, {}, "2.0");
 

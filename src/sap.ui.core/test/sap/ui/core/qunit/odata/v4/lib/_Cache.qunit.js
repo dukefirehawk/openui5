@@ -404,7 +404,7 @@ sap.ui.define([
 				},
 				"@odata.etag" : sEtag
 			}, {}],
-			fnCallback = this.spy(),
+			fnCallback = sinon.spy(),
 			oDeleted = {index : "~insert~"},
 			oError = new Error(""),
 			oGroupLock = {getGroupId : function () {}},
@@ -599,7 +599,7 @@ sap.ui.define([
 	QUnit.test(sTitle, function (assert) {
 		var oCache = _Cache.create(this.oRequestor, "EMPLOYEES"),
 			aCacheData = [],
-			fnCallback = this.spy(),
+			fnCallback = sinon.spy(),
 			bDeleted = false,
 			oGroupLock = new _GroupLock("group", "owner", true),
 			aMessages = [];
@@ -663,7 +663,7 @@ sap.ui.define([
 			aCacheData = [{}, {
 				"@$ui5._" : {predicate : "('1')"}
 			}, {}],
-			fnCallback = this.spy(),
+			fnCallback = sinon.spy(),
 			oPromise;
 
 		aCacheData.$byPredicate = {"('1')" : aCacheData[1]};
@@ -2559,7 +2559,7 @@ sap.ui.define([
 					}
 				},
 				oEntityMatcher = sinon.match.same(oEntity),
-				fnError = this.spy(),
+				fnError = sinon.spy(),
 				oError = new Error(),
 				bPatchWithoutSideEffects = oFixture.$$patchWithoutSideEffects || oFixture.bUpsert,
 				iExpectedCalls = bPatchWithoutSideEffects ? 0 : 1,
@@ -2577,10 +2577,10 @@ sap.ui.define([
 					me : "too"
 				},
 				oPatchPromise = bCanceled ? Promise.reject(oError) : Promise.resolve(oPatchResult),
-				fnPatchSent = this.spy(),
+				fnPatchSent = sinon.spy(),
 				oRequestCall,
 				oRequestLock = {unlock : function () {}},
-				fnSetUpsertPromise = oFixture.bNoSetUpsertPromise ? undefined : this.spy(),
+				fnSetUpsertPromise = oFixture.bNoSetUpsertPromise ? undefined : sinon.spy(),
 				mTypeForMetaPath = {},
 				oUnlockCall,
 				oUpdateData = {},
@@ -2844,7 +2844,7 @@ sap.ui.define([
 							Amount : "123"
 						}
 					},
-					fnError = this.spy(),
+					fnError = sinon.spy(),
 					oGroupLock = {
 						getGroupId : function () {},
 						unlock : function () {}
@@ -2972,8 +2972,8 @@ sap.ui.define([
 					}
 				},
 				sEntityPath = "path/to/entity",
-				fnError0 = this.spy(),
-				fnError1 = this.spy(),
+				fnError0 = sinon.spy(),
+				fnError1 = sinon.spy(),
 				oError1 = new Error(),
 				oError2 = new Error(),
 				mTypeForMetaPath = {},
@@ -3160,11 +3160,11 @@ sap.ui.define([
 				sUnitOrCurrencyPath : sUnitOrCurrencyPath
 			}).then(function (oResult) {
 				assert.notOk(bCanceled);
-				sinon.assert.calledOnceWithExactly(fnError0, oError1);
+				sinon.assert.calledOnceWithExactly(fnError1, oError1);
 				assert.strictEqual(oResult, undefined, "no result");
 			}, function (oResult) {
 				assert.ok(bCanceled);
-				sinon.assert.calledOnceWithExactly(fnError0, oError1);
+				sinon.assert.calledOnceWithExactly(fnError1, oError1);
 				assert.strictEqual(oResult, oError2);
 			});
 
@@ -3198,7 +3198,7 @@ sap.ui.define([
 				}
 			},
 			sEntityPath = "path/to/entity",
-			fnError = this.spy(),
+			fnError = sinon.spy(),
 			oError = new Error(),
 			sFullPath = "path/to/entity/Address/City",
 			oGroupLock = {
@@ -3303,7 +3303,7 @@ sap.ui.define([
 					City : "Heidelberg"
 				}
 			},
-			fnError = this.spy(),
+			fnError = sinon.spy(),
 			fnIsKeepAlive = "~fnIsKeepAlive~",
 			oError = new Error(),
 			oGroupLock = {getGroupId : function () {}},
@@ -4577,7 +4577,7 @@ sap.ui.define([
 				{/*bSortExpandSelect*/}),
 			oCacheMock = this.mock(oCache),
 			mCacheQueryOptions = {},
-			fnDataRequested = this.spy(),
+			fnDataRequested = function () {},
 			sKeyPredicate = "('13')",
 			oElement = {"@$ui5._" : {predicate : sKeyPredicate}},
 			aElements = oFixture.index !== undefined ? [{}, oElement, {}] : [{}, {}],
@@ -4750,13 +4750,13 @@ sap.ui.define([
 			mCacheQueryOptions = {},
 			// Note: due to the inner forEach, make sure oFixture is not modified by c.u.t.!
 			oClonedQueryOptions = Object.assign({}, oFixture.mBindingQueryOptions),
-			fnDataRequested = this.spy(),
+			fnDataRequested = function () {},
 			sKeyPredicate = "('13')",
 			oElement = {"@$ui5._" : {predicate : sKeyPredicate}},
 			aElements = [{}, oElement, {}],
 			oFetchValuePromise = Promise.resolve(aElements),
 			oGroupLock = {},
-			fnOnRemove = this.spy(),
+			fnOnRemove = sinon.spy(),
 			oPromise,
 			mQueryOptionsForPath = {},
 			oResponse = bRemoved
@@ -4856,7 +4856,7 @@ sap.ui.define([
 		var oCache = new _Cache(this.oRequestor, "TEAMS", {/*mQueryOptions*/}),
 			oCacheMock = this.mock(oCache),
 			oCopySelectedExpectation,
-			fnDataRequested = this.spy(),
+			fnDataRequested = function () {},
 			oElement = {"@$ui5._" : {predicate : "('13')"}},
 			aElements = [oElement],
 			oFetchValuePromise = Promise.resolve(aElements),
@@ -4869,7 +4869,7 @@ sap.ui.define([
 				value : []
 			},
 			oObjectMock = this.mock(Object),
-			fnOnRemove = this.spy(),
+			fnOnRemove = sinon.spy(),
 			mQueryOptionsForInCollection = {
 				$apply : "apply",
 				$expand : "expand",
@@ -4979,14 +4979,14 @@ sap.ui.define([
 	QUnit.test("refreshSingleWithRemove: for kept-alive element (not in list)", function (assert) {
 		var oCache = new _Cache(this.oRequestor, "TEAMS", {/*mQueryOptions*/}),
 			oCacheMock = this.mock(oCache),
-			fnDataRequested = this.spy(),
+			fnDataRequested = function () {},
 			oElement = {"@$ui5._" : {predicate : "('13')"}},
 			aElements = [{a : "42"}],
 			oExistenceResponse = {value : [{}]},
 			oFetchValuePromise = Promise.resolve(aElements),
 			oGroupLock = {},
 			oObjectMock = this.mock(Object),
-			fnOnRemove = this.spy(),
+			fnOnRemove = function () {},
 			mQueryOptionsForPath = {},
 			mQueryOptionsForPathCopy = {$filter : "does~not~matter"},
 			mTypeForMetaPath = {};
@@ -5042,7 +5042,7 @@ sap.ui.define([
 		var oCache = new _Cache(this.oRequestor, "Employees('31')", {/*mQueryOptions*/},
 				{/*bSortExpandSelect*/}),
 			oCacheMock = this.mock(oCache),
-			fnDataRequested = this.spy(),
+			fnDataRequested = function () {},
 			oElement = {"@$ui5._" : {predicate : "('13')"}},
 			aElements = [{}, {}, {}, oElement],
 			oFetchValuePromise = Promise.resolve(aElements),
@@ -9154,7 +9154,7 @@ sap.ui.define([
 				function (assert) {
 			var sResourcePath = "Employees",
 				oCache = this.createCache(sResourcePath),
-				fnDataRequested = this.spy(),
+				fnDataRequested = sinon.spy(),
 				oPromise = Promise.resolve(),
 				that = this;
 
@@ -9179,7 +9179,7 @@ sap.ui.define([
 				function (assert) {
 			var sResourcePath = "Employees",
 				oCache = this.createCache(sResourcePath),
-				fnDataRequested = this.spy(),
+				fnDataRequested = sinon.spy(),
 				aPromises = [],
 				that = this;
 
@@ -9718,7 +9718,7 @@ sap.ui.define([
 			oCacheMock = this.mock(oCache),
 			aCollection = [],
 			oCreatePromise,
-			fnDeleteCallback = this.spy(),
+			fnDeleteCallback = function () {},
 			oEntity0 = {},
 			oEntity1 = {},
 			oEntityData,
@@ -9870,7 +9870,7 @@ sap.ui.define([
 			oCreatePromise,
 			oEntityData = {},
 			oError = new Error("This call intentionally failed"),
-			fnErrorCallback = this.spy(),
+			fnErrorCallback = sinon.spy(),
 			oGroupLock = {
 				getGroupId : function () { return "updateGroup"; }
 			},
@@ -10933,7 +10933,7 @@ sap.ui.define([
 				updateMessages : function () {}
 			}, {/*mHeaders*/}, {/*mQueryParams*/}, "4.0"),
 			oCache = _Cache.create(oRequestor, "Employees"),
-			fnCallback = this.spy(),
+			fnCallback = sinon.spy(),
 			oCreatedPromise,
 			oEntity = {EmployeeId : "4711", "@odata.etag" : "anyEtag"},
 			sGroupId = "updateGroup",
@@ -12413,7 +12413,7 @@ sap.ui.define([
 		}, new Error("Parallel POST requests not allowed"));
 
 		return oPromise.then(function (oPostResult1) {
-			var fnDataRequested = that.spy(),
+			var fnDataRequested = sinon.spy(),
 				oGroupLock1 = {},
 				oGroupLock2 = {unlock : function () {}},
 				oPromise0,
@@ -14273,7 +14273,7 @@ sap.ui.define([
 
 		const oCacheMock = this.mock(oCache);
 		oCacheMock.expects("fetchTypes").withExactArgs().returns(oTypesPromise);
-		const fnSeparateReceived = this.spy();
+		const fnSeparateReceived = sinon.spy();
 
 		// code under test
 		const oResult = oCache.requestSeparateProperties(3, 5, oMainPromise, fnSeparateReceived);
@@ -14433,7 +14433,7 @@ sap.ui.define([
 			"(3)" : {foo : {"@odata.etag" : "same.3"}}
 		};
 		oCache.setSeparate(["foo"]);
-		const fnSeparateReceived = this.spy();
+		const fnSeparateReceived = sinon.spy();
 
 		this.mock(oCache).expects("fetchTypes").withExactArgs().resolves("~types~");
 		this.mock(oCache).expects("getResourcePathWithQuery")
@@ -14532,7 +14532,7 @@ sap.ui.define([
 		oCacheMock.expects("visitResponse").never();
 		this.mock(_Helper).expects("updateSelected").never();
 		this.oModelInterfaceMock.expects("reportError").never();
-		const fnSeparateReceived = this.spy();
+		const fnSeparateReceived = sinon.spy();
 
 		// code under test (oMainPromise must not have an influence)
 		await oCache.requestSeparateProperties(3, 5, /*oMainPromise*/null, fnSeparateReceived);
