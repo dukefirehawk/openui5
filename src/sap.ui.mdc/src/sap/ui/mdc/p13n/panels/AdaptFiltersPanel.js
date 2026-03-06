@@ -64,7 +64,6 @@ sap.ui.define([
 				/**
 				 * Whether to use the new UI (true) or legacy UI (false)
 				 * Passed from AdaptationFilterBar via GroupContainer
-				 * @experimental
 				 * @private
 				 * @ui5-restricted sap.comp, sap.ui.mdc
 				 */
