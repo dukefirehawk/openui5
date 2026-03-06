@@ -482,6 +482,7 @@ sap.ui.define([
 		new ToolbarSpacer(),
 		new ComboBox({
 			placeholder: "Choose your country",
+			ariaLabelledBy: ["dummy_label_acc_name"],
 
 			items: [
 				{
