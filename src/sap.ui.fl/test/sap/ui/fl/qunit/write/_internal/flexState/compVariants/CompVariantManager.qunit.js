@@ -444,17 +444,11 @@ sap.ui.define([
 		async beforeEach() {
 			sandbox.stub(ManifestUtils, "getFlexReferenceForSelector").returns(sComponentId);
 
-			sandbox.stub(Settings, "getInstance").returns({
-				getIsPublicLayerAvailable() {
-					return true;
-				},
-				getUserId() {
-					return "userA";
-				},
-				getIsVariantAuthorNameAvailable() {
-					return false;
-				}
-			});
+			sandbox.stub(Settings, "getInstance").returns(new Settings({
+				isPublicLayerAvailable: true,
+				userId: "userA",
+				isVariantAuthorNameAvailable: false
+			}));
 
 			await FlexState.initialize({
 				reference: sComponentId,
@@ -572,7 +566,7 @@ sap.ui.define([
 		});
 
 		QUnit.test("Given persist is called with all kind of objects (variants, changes, defaultVariant) present", async function(assert) {
-			var sPersistencyKey = "persistency.key";
+			const sPersistencyKey = "persistency.key";
 
 			await CompVariantManagementState.assembleVariantList({
 				reference: sComponentId,
@@ -581,7 +575,7 @@ sap.ui.define([
 			});
 
 			assert.equal(FlexObjectManager.hasDirtyFlexObjects({ reference: sComponentId }), false, "hasDirtyChanges is false at beginning");
-			var oVariant = CompVariantManager.addVariant({
+			const oVariant = CompVariantManager.addVariant({
 				changeSpecificData: {
 					type: "pageVariant",
 					content: {}
@@ -617,15 +611,15 @@ sap.ui.define([
 				componentId: sComponentId,
 				persistencyKey: sPersistencyKey,
 				defaultVariantId: "id_123_pageVariant",
-				conntent: {}
+				content: {}
 			});
 			assert.equal(FlexObjectManager.hasDirtyFlexObjects({ reference: sComponentId }), true, "hasDirtyChanges is true after setDefault variant");
 			let aCompVariants = CompVariantManagementState.assembleVariantList(mPropertyBag);
 
-			var oWriteStub = sandbox.stub(Storage, "write").resolves();
-			var oUpdateStub = sandbox.stub(Storage, "update").resolves();
-			var oRemoveStub = sandbox.stub(Storage, "remove").resolves();
-			const oFlexStateUpdateStub = sandbox.stub(FlexState, "update").resolves();
+			const oWriteStub = sandbox.stub(Storage, "write").resolves();
+			const oUpdateStub = sandbox.stub(Storage, "update").resolves();
+			const oRemoveStub = sandbox.stub(Storage, "remove").resolves();
+			const oFlexStateUpdateStub = sandbox.spy(FlexState, "update");
 			// Preparation ends
 
 			await CompVariantManager.persist(mPropertyBag);
@@ -638,28 +632,29 @@ sap.ui.define([
 			assert.strictEqual(oWriteStub.callCount, 3, "then the write method was called 3 times,");
 			assert.strictEqual(oUpdateStub.callCount, 0, "no update was called");
 			assert.strictEqual(oRemoveStub.callCount, 0, "and no delete was called");
-			assert.strictEqual(oFlexStateUpdateStub.callCount, 0, "and flexState update was called once");
-
-			const aVariantChange = CompVariantManagementState.getVariantChanges(oVariant)[0];
-
-			assert.strictEqual(
-				oVariant.getState(),
-				States.LifecycleState.PERSISTED,
-				"the variant is persisted"
+			assert.strictEqual(oFlexStateUpdateStub.callCount, 3, "and flexState update was called three times");
+			assert.deepEqual(
+				oFlexStateUpdateStub.getCall(0).args[1],
+				[{ type: "add", flexObject: oVariant.convertToFileContent() }],
+				"the first update call was for the correct object"
 			);
-			assert.strictEqual(
-				aVariantChange.getState(),
-				States.LifecycleState.PERSISTED,
-				"the addFavorite change is persisted"
+			const oVariantChange = CompVariantManagementState.getVariantChanges(oVariant)[0];
+			assert.deepEqual(
+				oFlexStateUpdateStub.getCall(1).args[1],
+				[{ type: "add", flexObject: oVariantChange.convertToFileContent() }],
+				"the second update call was for the correct object"
 			);
-
 			let aSetDefaultChanges = CompVariantManagementState.getDefaultChanges(mPropertyBag);
-
-			assert.strictEqual(
-				aSetDefaultChanges[0].getState(),
-				States.LifecycleState.PERSISTED,
-				"the set default variant is persisted"
+			assert.deepEqual(
+				oFlexStateUpdateStub.getCall(2).args[1],
+				[{ type: "add", flexObject: aSetDefaultChanges[0].convertToFileContent() }],
+				"the third update call was for the correct object"
 			);
+
+			assert.strictEqual(oVariant.getState(), States.LifecycleState.PERSISTED, "the variant is persisted");
+			assert.strictEqual(oVariantChange.getState(), States.LifecycleState.PERSISTED, "the addFavorite change is persisted");
+
+			assert.strictEqual(aSetDefaultChanges[0].getState(), States.LifecycleState.PERSISTED, "the set default variant is persisted");
 			assert.strictEqual(
 				aSetDefaultChanges[0].getNamespace(),
 				"apps/the.app.component/changes/",
@@ -669,7 +664,7 @@ sap.ui.define([
 			aSetDefaultChanges = CompVariantManagementState.getDefaultChanges(mPropertyBag);
 
 			oVariant.setState(States.LifecycleState.DELETED);
-			aVariantChange.setState(States.LifecycleState.UPDATED);
+			oVariantChange.setState(States.LifecycleState.UPDATED);
 			aSetDefaultChanges[0].setState(States.LifecycleState.DELETED);
 
 			await CompVariantManager.persist(mPropertyBag);
@@ -680,23 +675,30 @@ sap.ui.define([
 			assert.strictEqual(oUpdateStub.callCount, 1, "one update was called");
 			assert.strictEqual(oRemoveStub.callCount, 2, "and two deletes were called");
 			assert.strictEqual(aCompVariants.length, 1, "the variant is cleared and only the standard variant is left");
-			assert.strictEqual(oFlexStateUpdateStub.callCount, 2, "and flexState update was called twice");
-			assert.strictEqual(oFlexStateUpdateStub.firstCall.args[0], sComponentId, "the first update call was for the correct reference");
-			assert.deepEqual(oFlexStateUpdateStub.firstCall.args[1], [{ type: "delete", flexObject: oVariant.convertToFileContent() }], "the first update call was for the correct object");
-			assert.strictEqual(oFlexStateUpdateStub.secondCall.args[0], sComponentId, "the second update call was for the correct reference");
-			assert.deepEqual(oFlexStateUpdateStub.secondCall.args[1], [{ type: "delete", flexObject: aSetDefaultChanges[0].convertToFileContent() }], "the second update call was for the correct object");
+			assert.strictEqual(oFlexStateUpdateStub.callCount, 6, "and flexState update was called three more times");
+			assert.deepEqual(
+				oFlexStateUpdateStub.getCall(3).args[1],
+				[{ type: "delete", flexObject: oVariant.convertToFileContent() }],
+				"the fourth update call was for the correct object"
+			);
+			assert.deepEqual(
+				oFlexStateUpdateStub.getCall(4).args[1],
+				[{ type: "update", flexObject: oVariantChange.convertToFileContent() }],
+				"the fifth update call was for the correct object"
+			);
+			assert.deepEqual(
+				oFlexStateUpdateStub.getCall(5).args[1],
+				[{ type: "delete", flexObject: aSetDefaultChanges[0].convertToFileContent() }],
+				"the sixth update call was for the correct object"
+			);
 			assert.strictEqual(
-				aVariantChange.getState(),
+				oVariantChange.getState(),
 				States.LifecycleState.PERSISTED,
 				"the addFavorite change is persisted"
 			);
 			const aDefaultVariants = CompVariantManagementState.getDefaultChanges(mPropertyBag);
 			assert.strictEqual(aDefaultVariants.length, 0, "the default variant was cleared");
-			assert.strictEqual(
-				aCompVariants.standardVariantChange,
-				undefined,
-				"the standard variant was cleared"
-			);
+			assert.strictEqual(aCompVariants.standardVariantChange, undefined, "the standard variant was cleared");
 		});
 
 		QUnit.test("Given persist is called for a variant that was created and removed before persisting", async function(assert) {
