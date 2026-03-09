@@ -547,7 +547,7 @@ function(
 
 		ShortcutHintsMixin.addConfig(
 			this._oDeleteControl, {
-				messageBundleKey: "LIST_ITEM_DELETE_SHORTCUT"
+				shortcut: "Delete" // Keyboard.Shortcut.Delete, see sap.ui.core/messagebundle.properties
 			},
 		this._oDeleteControl);
 
@@ -588,7 +588,7 @@ function(
 
 		ShortcutHintsMixin.addConfig(
 			this._oDetailControl, {
-				messageBundleKey: Device.os.macintosh ? "LIST_ITEM_EDIT_SHORTCUT_MAC" : "LIST_ITEM_EDIT_SHORTCUT"
+				shortcut: "Ctrl+E" // ShortcutHintsMixin takes care of normalizing and localizing
 			},
 		this._oDetailControl);
 
