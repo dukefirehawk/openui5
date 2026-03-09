@@ -1942,8 +1942,7 @@ sap.ui.define([
 	 * @name sap.ui.core.IAccessKeySupport
 	 * @interface
 	 * @public
-	 * @experimental As of version 1.104
-	 * @since 1.104
+	 * @ui5-experimental-since 1.104
 	 */
 
 	/**
@@ -1952,8 +1951,7 @@ sap.ui.define([
 	 *
 	 * @public
 	 * @function
-	 * @experimental As of version 1.104
-	 * @since 1.104
+	 * @ui5-experimental-since 1.104
 	 * @name sap.ui.core.IAccessKeySupport.getAccessKeysFocusTarget?
 	 */
 
@@ -1962,8 +1960,7 @@ sap.ui.define([
 	 *
 	 * @public
 	 * @function
-	 * @experimental As of version 1.104
-	 * @since 1.104
+	 * @ui5-experimental-since 1.104
 	 * @name sap.ui.core.IAccessKeySupport.onAccKeysHighlightStart?
 	 */
 
@@ -1972,8 +1969,7 @@ sap.ui.define([
 	 *
 	 * @public
 	 * @function
-	 * @experimental As of version 1.104
-	 * @since 1.104
+	 * @ui5-experimental-since 1.104
 	 * @name sap.ui.core.IAccessKeySupport.onAccKeysHighlightEnd?
 	 */
 
