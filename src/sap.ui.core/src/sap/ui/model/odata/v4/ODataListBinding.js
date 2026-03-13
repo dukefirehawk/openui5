@@ -1781,7 +1781,10 @@ sap.ui.define([
 	 * @see sap.ui.model.odata.v4.ODataParentBinding#doSetProperty
 	 */
 	ODataListBinding.prototype.doSetProperty = function () {
-		this.oCache.setGrandTotalOutdated?.(true);
+		if (_Helper.isDataAggregation(this.mParameters)) {
+			this.oCache.setGrandTotalOutdated?.(true);
+			this.oHeaderContext.setOutdated(true);
+		}
 	};
 
 	/**
@@ -1913,6 +1916,13 @@ sap.ui.define([
 
 			if (oResult) {
 				oResult.$checkStillValid?.();
+				// Reset the outdated flag after the first read after #reset has been called;
+				// after #reset the length is not final and aContexts contains only created contexts
+				if (!that.bLengthFinal && that.aContexts.length === that.iCreatedContexts
+						&& that.oHeaderContext.isOutdated() !== undefined) {
+					that.oHeaderContext.setOutdated(false);
+				}
+
 				return that.createContexts(iStart, oResult.value);
 			}
 			// return undefined;

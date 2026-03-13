@@ -1632,8 +1632,13 @@ sap.ui.define([
 [false, true].forEach(function (bAsync) {
 	[false, true].forEach(function (bGroupLock) {
 		[false, true].forEach(function (bReadGroupLock) {
+			[false, true].forEach(function (bLengthFinal) {
+				[false, true].forEach(function (bMoreContexts) {
+					[undefined, false, true].forEach(function (bOutdated) {
 	const sTitle = "fetchContexts: async=" + bAsync + ", groupLock=" + bGroupLock
-		+ ", readGroupLock=" + bReadGroupLock;
+		+ ", readGroupLock=" + bReadGroupLock + ", lengthFinal=" + bLengthFinal
+		+ ", moreContexts=" + bMoreContexts + ", outdated=" + bOutdated;
+
 	QUnit.test(sTitle, function (assert) {
 		var oBinding = this.bindList("/EMPLOYEES"),
 			bPending = true,
@@ -1642,6 +1647,10 @@ sap.ui.define([
 			oResult = {value : []};
 
 		oBinding.oReadGroupLock = oReadGroupLock;
+		oBinding.bLengthFinal = bLengthFinal;
+		oBinding.aContexts = bMoreContexts ? [{}, {}] : [{}];
+		oBinding.iCreatedContexts = 1;
+
 		this.mock(oBinding).expects("lockGroup").exactly(bGroupLock || bReadGroupLock ? 0 : 1)
 			.withExactArgs().returns("~oGroupLock~");
 		this.mock(oBinding).expects("fetchData")
@@ -1649,6 +1658,11 @@ sap.ui.define([
 				!bGroupLock && bReadGroupLock ? "~oReadGroupLock~" : "~oGroupLock~",
 				"~fnDataRequested~")
 			.returns(SyncPromise.resolve(oResult));
+		this.mock(oBinding.oHeaderContext).expects("isOutdated").withExactArgs()
+			.exactly(bLengthFinal || bMoreContexts ? 0 : 1)
+			.returns(bOutdated);
+		this.mock(oBinding.oHeaderContext).expects("setOutdated").withExactArgs(false)
+			.exactly(bLengthFinal || bMoreContexts || bOutdated === undefined ? 0 : 1);
 		this.mock(oBinding).expects("createContexts")
 			.withExactArgs(1, sinon.match.same(oResult.value))
 			.returns(SyncPromise.resolve("~bChanged~"));
@@ -1668,6 +1682,9 @@ sap.ui.define([
 
 		return oPromise;
 	});
+					});
+				});
+			});
 		});
 	});
 });
@@ -5568,6 +5585,8 @@ sap.ui.define([
 			oContextMock.expects("fetchValue")
 				.withExactArgs("/TEAMS/1/TEAM_2_EMPLOYEES")
 				.returns(SyncPromise.resolve(aCacheResult));
+			this.mock(oBinding.oHeaderContext).expects("isOutdated").withExactArgs()
+				.returns(undefined);
 
 			// code under test - ensure that getContexts delivers the created context correctly
 			aContexts = oBinding.getContexts(0, 4);
@@ -7960,6 +7979,7 @@ sap.ui.define([
 				done();
 			}, 0);
 		});
+		this.mock(oBinding.oHeaderContext).expects("isOutdated").withExactArgs().returns(undefined);
 
 		aContexts = oBinding.getContexts(0, 50);
 		assert.strictEqual(aContexts.length, 0);
@@ -10294,19 +10314,27 @@ sap.ui.define([
 	});
 
 	//*********************************************************************************************
-[false, true].forEach((bWithAggregationCache) => {
-	const sTitle = "doSetProperty: returns undefined, bWithAggregationCache="
-		+ bWithAggregationCache;
+[false, true].forEach((bDataAggregation) => {
+	[false, true].forEach((bWithAggregationCache) => {
+		const sTitle = "doSetProperty: returns undefined, bDataAggregation="
+			+ bDataAggregation + ", bWithAggregationCache=" + bWithAggregationCache;
 
 	QUnit.test(sTitle, function (assert) {
 		const oBinding = this.bindList("/EMPLOYEES");
+		this.mock(_Helper).expects("isDataAggregation")
+			.withExactArgs(sinon.match.same(oBinding.mParameters))
+			.returns(bDataAggregation);
 		if (bWithAggregationCache) {
 			oBinding.oCache.setGrandTotalOutdated = mustBeMocked;
-			this.mock(oBinding.oCache).expects("setGrandTotalOutdated").withExactArgs(true);
+			this.mock(oBinding.oCache).expects("setGrandTotalOutdated").withExactArgs(true)
+				.exactly(bDataAggregation ? 1 : 0);
 		}
+		this.mock(oBinding.oHeaderContext).expects("setOutdated").withExactArgs(true)
+			.exactly(bDataAggregation ? 1 : 0);
 
 		// code under test
 		assert.strictEqual(oBinding.doSetProperty(), undefined);
+	});
 	});
 });
 
