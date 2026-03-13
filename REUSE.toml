@@ -613,57 +613,6 @@ SPDX-License-Identifier = "MIT"
 SPDX-FileComment = "these files belong to: hammer.js"
 
 
-# Library: sap.ui.webc.common:
-
-[[annotations]]
-path = [
-    "src/sap.ui.webc.common/src/sap/ui/webc/common/thirdparty/base/**",
-    "src/sap.ui.webc.common/src/sap/ui/webc/common/thirdparty/theming/**",
-    "src/sap.ui.webc.common/src/sap/ui/webc/common/thirdparty/localization/**",
-    "src/sap.ui.webc.common/src/sap/ui/webc/common/thirdparty/icons/**",
-    "src/sap.ui.webc.common/src/sap/ui/webc/common/thirdparty/icons-tnt/**",
-    "src/sap.ui.webc.common/src/sap/ui/webc/common/thirdparty/icons-business-suite/**"
-]
-precedence = "aggregate"
-SPDX-FileCopyrightText = "SAP"
-SPDX-License-Identifier = "Apache-2.0"
-SPDX-FileComment = "these files belong to: UI5 Web Components"
-
-[[annotations]]
-path = "src/sap.ui.webc.common/src/sap/ui/webc/common/thirdparty/lit-html/**"
-precedence = "aggregate"
-SPDX-FileCopyrightText = "Google LLC"
-SPDX-License-Identifier = "BSD-3-Clause"
-SPDX-FileComment = "these files belong to: lit-html"
-
-
-# Library: sap.ui.webc.fiori:
-
-[[annotations]]
-path = "src/sap.ui.webc.fiori/src/sap/ui/webc/fiori/thirdparty/**"
-precedence = "aggregate"
-SPDX-FileCopyrightText = "SAP"
-SPDX-License-Identifier = "Apache-2.0"
-SPDX-FileComment = "these files belong to: UI5 Web Components"
-
-[[annotations]]
-path = "src/sap.ui.webc.fiori/src/sap/ui/webc/fiori/lib/zxing.js"
-precedence = "aggregate"
-SPDX-FileCopyrightText = "2005 Sun Microsystems, Inc.; 2010-2014 University of Manchester; 2010-2015 Stian Soiland-Reyes; 2015 Peter Hull"
-SPDX-License-Identifier = "Apache-2.0"
-SPDX-FileComment = "these files belong to: ZXing"
-
-
-# Library: sap.ui.webc.main:
-
-[[annotations]]
-path = "src/sap.ui.webc.main/src/sap/ui/webc/main/thirdparty/**"
-precedence = "aggregate"
-SPDX-FileCopyrightText = "SAP"
-SPDX-License-Identifier = "Apache-2.0"
-SPDX-FileComment = "these files belong to: UI5 Web Components"
-
-
 # Outside of Libraries:
 
 [[annotations]]
