@@ -4499,6 +4499,7 @@ sap.ui.define([
 		this.mock(_Helper).expects("updateExisting")
 			.withExactArgs(sinon.match.same(oCache.mChangeListeners), "()", "~oldGrandTotal~",
 				"~newGrandTotal~");
+		this.mock(oCache).expects("setGrandTotalOutdated").withExactArgs(false);
 
 		// code under test
 		return oCache.readGrandTotal(oGroupLock).then((oResult) => {
@@ -4536,6 +4537,7 @@ sap.ui.define([
 				undefined, undefined, undefined, undefined, undefined, {/*mMergeableQueryOptions*/})
 			.rejects(oError);
 		this.mock(_Helper).expects("updateExisting").never();
+		this.mock(oCache).expects("setGrandTotalOutdated").withExactArgs(true);
 
 		// code under test
 		return oCache.readGrandTotal(oGroupLock).then(() => {
@@ -4545,6 +4547,48 @@ sap.ui.define([
 			assert.strictEqual(oError0, oError);
 		});
 	});
+
+	//*********************************************************************************************
+	QUnit.test("setGrandTotalOutdated: without grand total", function () {
+		const oCache = _AggregationCache.create(this.oRequestor, "Foo", "", {},
+			{hierarchyQualifier : "X"});
+		this.mock(_Helper).expects("updateAll").never();
+
+		// code under test
+		oCache.setGrandTotalOutdated(true);
+	});
+
+	//*********************************************************************************************
+[false, true].forEach((bWithCopy) => {
+	QUnit.test("setGrandTotalOutdated: with grand total, with copy=" + bWithCopy, function () {
+		const oCache = _AggregationCache.create(this.oRequestor, "Foo", "", {}, {
+			aggregate : {
+				bar : {
+					grandTotal : true
+				}
+			}
+		});
+		oCache.aElements.$byPredicate["()"] = "~oGrandTotal~";
+		const oHelperMock = this.mock(_Helper);
+		oHelperMock.expects("updateAll")
+			.withExactArgs(sinon.match.same(oCache.mChangeListeners), "()", "~oGrandTotal~",
+				{"@$ui5.context.isOutdated" : "~bOutdated~"});
+		oHelperMock.expects("getPrivateAnnotation").withExactArgs("~oGrandTotal~", "copy")
+			.returns(bWithCopy ? "~oGrandTotalCopy~" : undefined);
+		if (bWithCopy) {
+			oHelperMock.expects("getPrivateAnnotation")
+				.withExactArgs("~oGrandTotalCopy~", "predicate")
+				.returns("~sPredicateGrandTotalCopy~");
+			oHelperMock.expects("updateAll")
+				.withExactArgs(sinon.match.same(oCache.mChangeListeners),
+					"~sPredicateGrandTotalCopy~", "~oGrandTotalCopy~",
+					{"@$ui5.context.isOutdated" : "~bOutdated~"});
+		}
+
+		// code under test
+		oCache.setGrandTotalOutdated("~bOutdated~");
+	});
+});
 
 	//*********************************************************************************************
 [false, true].forEach((bDataAggregation) => {
