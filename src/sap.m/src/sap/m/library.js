@@ -1806,7 +1806,6 @@ sap.ui.define([
 		/**
 		 * The Stretch frame type adjusts the size of the control to the parent.
 		 * @since 1.96
-		 * @experimental
 		 */
 		 Stretch: "Stretch"
 
@@ -1985,7 +1984,6 @@ sap.ui.define([
 		 *
 		 * Generic Tile renders buttons that are specified under 'actionButtons' aggregation
 		 * @public
-		 * @experimental since 1.96
 		 */
 		ActionMode: "ActionMode",
 
@@ -1994,7 +1992,6 @@ sap.ui.define([
 		 *
 		 * Enables Article Mode.
 		 * @public
-		 * @experimental since 1.96
 		 */
 		ArticleMode: "ArticleMode",
 
@@ -2017,7 +2014,6 @@ sap.ui.define([
 		 * It is applicable only for the OneByOne FrameType and TwoByHalf FrameType.
 		 * @public
 		 * @since 1.96
-		 * @experimental Since 1.96
 		 */
 		IconMode : "IconMode"
 	};
@@ -2237,7 +2233,6 @@ sap.ui.define([
 	 *
 	 * @enum {string}
 	 * @since 1.122
-	 * @experimental since 1.122
 	 * @public
 	 */
 	thisLib.ContentConfigType = {
