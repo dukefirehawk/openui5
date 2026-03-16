@@ -1,6 +1,7 @@
-/* ======================================================== */
-/* CSS for control sap.ui.commons/ProgressIndicator.control */
-/* ======================================================== */
+/* ================================================= */
+/* CSS for control sap.ui.commons/ProgressIndicator  */
+/* base theme                                        */
+/* ================================================= */
 
 .sapUiProgInd {
 	display: inline-block;
@@ -8,7 +9,7 @@
 
 .sapUiProgIndBorder {
 	display: inline-block;
-	border: 1px solid @sapUiContentForegroundBorderColor;
+	border: 1px solid var(--sapContent_ForegroundBorderColor);
 	border-radius: 3px;
 	box-sizing: border-box;
 }
@@ -20,44 +21,44 @@
 	border-radius: 3px;
 	box-sizing: border-box;
 	height: 14px;
-	-moz-user-select: none;
+	-webkit-user-select: none;
 	user-select: none;
 }
 
 .sapUiProgIndBarPos {
 	position: relative;
-	background-color: @sapUiSuccessBG;
+	background-color: var(--sapSuccessBackground);
 	color: contrast(@sapUiSuccessBG, @sapTextColor, @sapUiTextInverted);
 	border-radius: 3px;
 	box-sizing: border-box;
 	height: 14px;
-	-moz-user-select: none;
+	-webkit-user-select: none;
 	user-select: none;
 }
 
 .sapUiProgIndBarNeg {
 	position: relative;
-	background-color: @sapUiErrorBG;
+	background-color: var(--sapErrorBackground);
 	color: contrast(@sapUiErrorBG, @sapTextColor, @sapUiTextInverted);
 	border-radius: 3px;
 	box-sizing: border-box;
 	height: 14px;
-	-moz-user-select: none;
+	-webkit-user-select: none;
 	user-select: none;
 }
 
-.sapUiProgIndBarCrit{
+.sapUiProgIndBarCrit {
 	position: relative;
-	background-color: @sapUiWarningBG;
+	background-color: var(--sapWarningBackground);
 	color: contrast(@sapUiWarningBG, @sapTextColor, @sapUiTextInverted);
 	border-radius: 3px;
 	box-sizing: border-box;
 	height: 14px;
-	-moz-user-select: none;
+	-webkit-user-select: none;
 	user-select: none;
 }
 
-.sapUiProgIndFont{
+.sapUiProgIndFont {
 	display: inline-block;
 	position: absolute;
 	left: 0;
@@ -69,35 +70,35 @@
 	white-space: nowrap;
 }
 
-.sapUiProgIndEndHidden{
+.sapUiProgIndEndHidden {
 	display: inline-block;
 	width: 1px;
 	height: 14px;
 	visibility: hidden;
 }
 
-.sapUiProgIndEnd{
+.sapUiProgIndEnd {
 	display: inline-block;
 	width: 1px;
 	height: 14px;
 	visibility: visible;
-	background-color: @sapUiContentForegroundBorderColor;
+	background-color: var(--sapContent_ForegroundBorderColor);
 }
 
-.sapUiProgIndPosEnd{
+.sapUiProgIndPosEnd {
 	display: inline-block;
 	width: 1px;
 	height: 14px;
 	visibility: visible;
-	background-color: @sapUiContentForegroundBorderColor;
+	background-color: var(--sapContent_ForegroundBorderColor);
 }
 
-.sapUiProgIndNegEnd{
+.sapUiProgIndNegEnd {
 	display: inline-block;
 	width: 1px;
 	height: 14px;
 	visibility: visible;
-	background-color: @sapUiContentForegroundBorderColor;
+	background-color: var(--sapContent_ForegroundBorderColor);
 }
 
 .sapUiProgIndCritEnd {
@@ -105,5 +106,5 @@
 	width: 1px;
 	height: 14px;
 	visibility: visible;
-	background-color: @sapUiContentForegroundBorderColor;
+	background-color: var(--sapContent_ForegroundBorderColor);
 }
