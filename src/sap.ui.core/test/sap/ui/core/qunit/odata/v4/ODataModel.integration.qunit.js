@@ -24575,8 +24575,9 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 	// only a single grand total request is sent.
 	// JIRA: CPOUI5ODATAV4-3300
 	//
-	// Support Context#requestSideEffects for single entities if there is no visual grouping. It
-	// always refreshes the complete entity and the grand total. Messages are not yet requested.
+	// Support Context#requestSideEffects for single entities if there is no visual grouping. The
+	// side effect for an empty navigation property path refreshes the complete entity and the grand
+	// total. Messages are not yet requested.
 	// JIRA: CPOUI5ODATAV4-3258
 	//
 	// Context#setOutdated and Context#isOutdated are supported for header contexts.
@@ -24586,6 +24587,10 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 	// (@$ui5.context.isOutdated is set to false). Ensure that the outdated flag is also updated in
 	// the copy of the grand total row.
 	// JIRA: CPOUI5ODATAV4-3392
+	//
+	// Context#requestSideEffects for single entities. Requesting side effects for a single property
+	// selects only the given property and refreshes the grand total.
+	// JIRA: CPOUI5ODATAV4-3389
 	QUnit.test("Data Aggregation: leaves' key predicates", function (assert) {
 		var oBinding,
 			oHeaderContext,
@@ -24782,12 +24787,15 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 		}).then(async function () {
 			assert.strictEqual(oBinding.getCount(), 2);
 
-			function expect() {
+			function expect(bMessages) {
 				const iBatchNo = that.iBatchNo + 1; // don't care about exact no.
+				const sSelect = "GrossAmount,LifecycleStatus" + (bMessages ? ",Messages" : "")
+					+ ",Note,SalesOrderID";
 				that.expectRequest(`#${iBatchNo} SalesOrderList('25')?sap-client=123&custom=foo`
-						+ "&$select=GrossAmount,LifecycleStatus,Note,SalesOrderID", {
+						+ "&$select=" + sSelect, {
 						GrossAmount : `${iBatchNo}`,
 						LifecycleStatus : "Y",
+						...(bMessages && {Messages : []}),
 						Note : "n/a",
 						SalesOrderID : "25"
 					})
@@ -24797,9 +24805,10 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 						value : [{GrossAmount : `${2 * iBatchNo}`}]
 					})
 					.expectRequest(`#${iBatchNo} SalesOrderList('24')?sap-client=123&custom=foo`
-						+ "&$select=GrossAmount,LifecycleStatus,Note,SalesOrderID", {
+						+ "&$select=" + sSelect, {
 						GrossAmount : `${iBatchNo}`,
 						LifecycleStatus : "X",
+						...(bMessages && {Messages : []}),
 						Note : "n/a",
 						SalesOrderID : "24"
 					})
@@ -24839,15 +24848,37 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 
 			await that.waitForChanges(assert);
 
-			expect();
+			expect(true);
 
 			await Promise.all([
 				// code under test (JIRA: CPOUI5ODATAV4-3258)
 				oContext25.requestSideEffects([""]),
 				// code under test (JIRA: CPOUI5ODATAV4-3258)
-				oContext24.requestSideEffects(["LifecycleStatus"]),
+				oContext24.requestSideEffects([""]),
 				that.waitForChanges(assert, "requestSideEffects")
 			]);
+
+			that.expectRequest("#6 SalesOrderList('25')?sap-client=123&custom=foo"
+					+ "&$select=LifecycleStatus,Note", {
+					LifecycleStatus : "Y*",
+					Note : "Late*"
+				})
+				.expectRequest("#6 SalesOrderList?sap-client=123&custom=foo"
+					+ "&$apply=filter(LifecycleStatus gt 'P' and GrossAmount lt 100)"
+					+ "/search(covfefe)/aggregate(GrossAmount)", {
+					value : [{GrossAmount : "42"}]
+				})
+				.expectChange("lifecycleStatus", [, "Y*"])
+				.expectChange("grossAmount", ["42"]);
+
+			await Promise.all([
+				// code under test (JIRA: CPOUI5ODATAV4-3389)
+				oContext25.requestSideEffects(["LifecycleStatus"]),
+				oContext25.requestSideEffects(["Note", "NoteLanguage"]), // NoteLanguage ignored
+				that.waitForChanges(assert, "requestSideEffects - single property")
+			]);
+
+			assert.strictEqual(oContext25.getProperty("Note"), "Late*");
 		}).then(function () {
 			that.expectRequest("SalesOrderList?sap-client=123&$apply=groupby((LifecycleStatus))"
 					+ "&$count=true&$skip=0&$top=100", {
