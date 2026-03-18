@@ -18,13 +18,16 @@ sap.ui.define([
 	"sap/m/VBox",
 	"sap/m/Bar",
 	"sap/m/Title",
-	"sap/ui/core/Control"
-], function(Core, Element, HTML, Button, Image, PDFViewer, Dialog, IllustratedMessage, IllustratedMessageType, Carousel, Log, Library, VBox, Bar, Title, Control) {
+	"sap/ui/core/Control",
+	"sap/ui/core/InvisibleMessage",
+	"sap/ui/core/library"
+], function(Core, Element, HTML, Button, Image, PDFViewer, Dialog, IllustratedMessage, IllustratedMessageType, Carousel, Log, Library, VBox, Bar, Title, Control, InvisibleMessage, coreLibrary) {
 	"use strict";
 
 	// get resource translation bundle;
 	const oLibraryResourceBundle = Library.getResourceBundleFor("sap.m");
-
+	// shortcut for sap.ui.core.InvisibleMessageMode
+	const InvisibleMessageMode = coreLibrary.InvisibleMessageMode;
 	/**
 	 * Media types that can be previewed.
 	 * @enum {string}
@@ -375,6 +378,7 @@ sap.ui.define([
 
 					var oTitle = this._oDialog?.getCustomHeader()?.getContentLeft()[0];
 					oTitle?.setText(sNewDialogTitle);
+					InvisibleMessage.getInstance().announce(sNewDialogTitle, InvisibleMessageMode.Polite);
 				}
 			});
 
