@@ -1,5 +1,4 @@
 {
-	"_version": "%LATEST_SCHEMA_VERSION%",
 	"sap.app": {
 		"id": "sap.ui5.test.editor.listcard.preview.right",
 		"type": "card",

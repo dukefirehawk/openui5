@@ -1,5 +1,7 @@
 {
+	"_version": "1.83.1",
 	"sap.app": {
+		"type": "application",
 		"id": "sap.ui.integration.sample.extensionUsingDestinations",
 		"applicationVersion": {
 			"version": "1.0.0"

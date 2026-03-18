@@ -1,6 +1,6 @@
 {
-	"_version": "%LATEST_SCHEMA_VERSION%",
 	"sap.app": {
+		"type": "card",
 		"id": "sap.ui.integration.sample.Progressive.Preview",
 		"applicationVersion": {
 			"version": "1.0.0"

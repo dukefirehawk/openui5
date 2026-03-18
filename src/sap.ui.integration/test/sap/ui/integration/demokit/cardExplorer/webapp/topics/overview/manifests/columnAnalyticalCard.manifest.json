@@ -1,5 +1,5 @@
 {
-	"_version": "%LATEST_SCHEMA_VERSION%",
+	"_version": "1.83.1",
 	"sap.app": {
 		"id": "card.explorer.analytical.popover.actions.card",
 		"type": "card",

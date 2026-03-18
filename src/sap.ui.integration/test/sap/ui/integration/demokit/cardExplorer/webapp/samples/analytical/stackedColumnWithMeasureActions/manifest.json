@@ -1,5 +1,4 @@
 {
-	"_version": "1.81.0",
 	"sap.app": {
 		"id": "card.explorer.stacked.column.measureActions",
 		"type": "card",

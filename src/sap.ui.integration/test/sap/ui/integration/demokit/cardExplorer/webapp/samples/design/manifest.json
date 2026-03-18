@@ -1,6 +1,7 @@
 {
-	"_version": "%LATEST_SCHEMA_VERSION%",
+	"_version": "1.83.1",
 	"sap.app": {
+		"type": "application",
 		"id": "sap.ui.integration.sample.Design",
 		"applicationVersion": {
 			"version": "1.0.0"

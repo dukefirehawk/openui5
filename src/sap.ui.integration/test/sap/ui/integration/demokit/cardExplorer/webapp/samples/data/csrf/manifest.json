@@ -1,5 +1,4 @@
 {
-	"_version": "%LATEST_SCHEMA_VERSION%",
 	"sap.app": {
 		"id": "card.explorer.data.csrf.card",
 		"type": "card",
