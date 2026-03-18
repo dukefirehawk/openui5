@@ -97,6 +97,7 @@ sap.ui.define([
 		DESTINATIONS: "/sap.card/configuration/destinations",
 		CSRF_TOKENS: "/sap.card/configuration/csrfTokens",
 		FILTERS: "/sap.card/configuration/filters",
+		CUSTOM_SETTINGS: "/sap.card/customSettings",
 		NO_DATA_MESSAGES: "/sap.card/configuration/messages/noData",
 		MODEL_SIZE_LIMIT: "/sap.card/configuration/modelSizeLimit",
 		CHILD_CARDS: "/sap.card/configuration/childCards"
@@ -228,6 +229,21 @@ sap.ui.define([
 				parameters: {
 					type: "object",
 					defaultValue: null
+				},
+
+				/**
+				 * Defines custom settings passed from the Mobile SDK or a hosting application.
+				 * These are global defaults that can be overridden by individual cards via their manifest.
+				 * The value is an object containing custom settings as key-value pairs.
+				 *
+				 * <b>Note:</b> For Mobile SDK usage, set this property before calling <code>startManifestProcessing</code>.
+				 *
+				 * @ui5-experimental-since 1.146
+				 */
+				customSettings: {
+					type: "object",
+					defaultValue: {},
+					visibility: "hidden"
 				},
 
 				/**
@@ -620,6 +636,7 @@ sap.ui.define([
 		this._aSevereErrors = [];
 		this._sPerformanceId = "UI5 Integration Cards " + this.getId() + " ";
 		this._aActiveLoadingProviders = [];
+		this._oCustomSettings = this.getProperty("customSettings");
 		this._fnOnDataReady = function () {
 			this._bDataReady = true;
 		}.bind(this);
@@ -749,6 +766,10 @@ sap.ui.define([
 			parameters: {
 				init: () => this.setModel(new JSONModel(ParameterMap.getParamsForModel()), "parameters")
 			},
+			customSettings: {
+				init: () => this.setModel(new JSONModel({}), "customSettings"),
+				reset: () => this.getModel("customSettings").setData({})
+			},
 			filters: {
 				init: () => this.setModel(new JSONModel(), "filters"),
 				reset: () => this.getModel("filters").setData({})
@@ -874,6 +895,12 @@ sap.ui.define([
 		if (this._getActualDataMode() !== CardDataMode.Active) {
 			return;
 		}
+
+		if (this._oCustomSettings !== this.getProperty("customSettings")) {
+			this._bApplyCustomSettings = true;
+			this._oCustomSettings = this.getProperty("customSettings");
+		}
+
 		this.startManifestProcessing();
 	};
 
@@ -920,7 +947,7 @@ sap.ui.define([
 			);
 		}
 
-		if (this._bApplyManifest || this._bApplyParameters) {
+		if (this._bApplyManifest || this._bApplyParameters || this._bApplyCustomSettings) {
 			this._clearReadyState();
 			this._initReadyState();
 		}
@@ -931,7 +958,7 @@ sap.ui.define([
 			this.createManifest(vManifest, this.getBaseUrl());
 		}
 
-		if (!this._bApplyManifest && this._bApplyParameters) {
+		if (!this._bApplyManifest && (this._bApplyParameters || this._bApplyCustomSettings)) {
 			this._oCardManifest.processParameters(this._getContextAndRuntimeParams());
 
 			this.processDestinations(this._oCardManifest.getJson()).then((oResult) => {
@@ -943,6 +970,7 @@ sap.ui.define([
 
 		this._bApplyManifest = false;
 		this._bApplyParameters = false;
+		this._bApplyCustomSettings = false;
 		this._refreshActionsMenu();
 	};
 
@@ -1610,6 +1638,36 @@ sap.ui.define([
 	};
 
 	/**
+	 * Gets the merged custom settings from the manifest combined with the settings from <code>customSettings</code> property.
+	 * Card manifest values take precedence for individual properties (shallow merge).
+	 *
+	 * <b>Notes</b>
+	 *
+	 * - Use this method when the manifest is ready. Check <code>manifestReady</code> event.
+	 *
+	 * - This method is intended for use by Mobile SDK.
+	 *
+	 * @private
+	 * @ui5-restricted Mobile SDK
+	 * @returns {object} Object containing the merged custom settings. Returns <code>null</code> if the manifest is not ready.
+	 * @ui5-experimental-since 1.146
+	 */
+	Card.prototype.getCombinedCustomSettings = function () {
+		if (!this._isManifestReady) {
+			Log.error("The manifest is not ready. Consider using the 'manifestReady' event.", "sap.ui.integration.widgets.Card");
+			return null;
+		}
+
+		const oModel = this.getModel("customSettings");
+		if (oModel) {
+			const oData = oModel.getData();
+			return jQuery.extend(true, {}, oData);
+		}
+
+		return {};
+	};
+
+	/**
 	 * Returns a value from the Manifest based on the specified path.
 	 *
 	 * <b>Note</b> Use this method when the manifest is ready. Check <code>manifestReady</code> event.
@@ -1973,6 +2031,7 @@ sap.ui.define([
 	 */
 	Card.prototype._applyManifestSettings = function () {
 		this._setParametersModelData();
+		this._setCustomSettingsModelData();
 
 		this._checkMockPreviewMode();
 
@@ -2013,6 +2072,24 @@ sap.ui.define([
 			}
 		}
 		this.getModel("parameters").setData(merge(oPredefinedParameters, oCustomParameters));
+	};
+
+	/**
+	 * Sets the data for the customSettings model.
+	 * Merges <code>customSettings</code> property with card manifest overrides.
+	 * Card manifest values take precedence for individual properties.
+	 *
+	 * The merge is shallow - card manifest can override individual properties
+	 * while preserving non-overridden properties from <code>customSettings</code> property.
+	 *
+	 * @private
+	 */
+	Card.prototype._setCustomSettingsModelData = function () {
+		const oCustomSettings = this.getProperty("customSettings");
+		const oManifestOverrides = this._oCardManifest.get(MANIFEST_PATHS.CUSTOM_SETTINGS) || {};
+		const oMergedSettings = Object.assign({}, oCustomSettings, oManifestOverrides);
+
+		this.getModel("customSettings").setData(oMergedSettings);
 	};
 
 	Card.prototype._applyDataManifestSettings = function () {
