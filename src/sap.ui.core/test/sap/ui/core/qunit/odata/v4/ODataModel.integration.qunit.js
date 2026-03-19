@@ -24588,7 +24588,7 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 	// JIRA: CPOUI5ODATAV4-3258
 	//
 	// Context#setOutdated and Context#isOutdated are supported for header contexts.
-	// Context#getObject also returns "@$ui5.context.isOutdated" if it has been set at least once.
+	// Context#getObject also returns "@$ui5.context.isOutdated" unless it cannot be determined.
 	// If any property is updated the grand total is marked as outdated (@$ui5.context.isOutdated is
 	// set to true). If the grand total is read again the grand total is marked as "up-to-date"
 	// (@$ui5.context.isOutdated is set to false). Ensure that the outdated flag is also updated in
