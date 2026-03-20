@@ -1422,9 +1422,8 @@ sap.ui.define([
 			oCountPromise.$old = "~oldCountPromise~";
 		}
 		oCache.oCountPromise = oCountPromise;
-		this.mock(oCache).expects("registerChangeListener")
-			.withExactArgs("./$count", "~oListener~")
-			.exactly(bRecursiveHierarchy ? 1 : 0);
+		this.mock(oCache).expects("registerChangeListener").exactly(bRecursiveHierarchy ? 1 : 0)
+			.withExactArgs("./$count", "~oListener~");
 		this.mock(oCache.oFirstLevel).expects("fetchValue").never();
 		this.mock(oCache).expects("drillDown").never();
 
@@ -1455,7 +1454,7 @@ sap.ui.define([
 		this.mock(oCache).expects("fetchValue")
 			.withExactArgs(sinon.match.same(_GroupLock.$cached), "some/path")
 			.returns(oFixture.oPromise);
-		this.mock(oFixture.oPromise).expects("caught").withExactArgs().exactly(i);
+		this.mock(oFixture.oPromise).expects("caught").exactly(i).withExactArgs();
 
 		// code under test
 		assert.strictEqual(oCache.getValue("some/path"), oFixture.vValue);
@@ -5977,7 +5976,7 @@ sap.ui.define([
 		const oPostBody = {};
 		const oCollectionCache = bInFirstLevel ? oCache.oFirstLevel : oGroupLevelCache;
 		let bNodePropertyCompleted = false;
-		oCacheMock.expects("createCountPromise").withExactArgs(true).exactly(oCountPromise ? 1 : 0)
+		oCacheMock.expects("createCountPromise").exactly(oCountPromise ? 1 : 0).withExactArgs(true)
 			.callsFake(() => {
 				oCache.oCountPromise = {
 					$restore : sinon.spy()
