@@ -4456,7 +4456,8 @@ sap.ui.define([
 	});
 
 	//*********************************************************************************************
-	QUnit.test("readGrandTotal: success", function (assert) {
+[false, true].forEach((bWithGrandTotalCopy) => {
+	QUnit.test("readGrandTotal: success, 2 grand totals:" + bWithGrandTotalCopy, function (assert) {
 		const oCache = _AggregationCache.create(this.oRequestor, "Foo", "", {
 			// $expand, $filter, $search, and $select must not be used with grand totals
 			$$filterBeforeAggregate : "~$$filterBeforeAggregate~",
@@ -4493,10 +4494,19 @@ sap.ui.define([
 			.withExactArgs("GET", "Foo~sQueryString~", "~oUnlockedGroupLock~", undefined, undefined,
 				undefined, undefined, undefined, undefined, undefined, {/*mMergeableQueryOptions*/})
 			.resolves({value : ["~newGrandTotal~"]});
-		oCache.aElements.$byPredicate["()"] = "~oldGrandTotal~";
-		this.mock(_Helper).expects("updateExisting")
-			.withExactArgs(sinon.match.same(oCache.mChangeListeners), "()", "~oldGrandTotal~",
+		oCache.aElements.$byPredicate["()"] = "~oGrandTotal~";
+		const oHelperMock = this.mock(_Helper);
+		oHelperMock.expects("updateExisting")
+			.withExactArgs(sinon.match.same(oCache.mChangeListeners), "()", "~oGrandTotal~",
 				"~newGrandTotal~");
+		oHelperMock.expects("getPrivateAnnotation").withExactArgs("~oGrandTotal~", "copy")
+			.returns(bWithGrandTotalCopy ? "~oGrandTotalCopy~" : undefined);
+		oHelperMock.expects("getPrivateAnnotation").exactly(bWithGrandTotalCopy ? 1 : 0)
+			.withExactArgs("~oGrandTotalCopy~", "predicate")
+			.returns("~oGrandTotalCopyPredicate~");
+		oHelperMock.expects("updateExisting").exactly(bWithGrandTotalCopy ? 1 : 0)
+			.withExactArgs(sinon.match.same(oCache.mChangeListeners), "~oGrandTotalCopyPredicate~",
+				"~oGrandTotalCopy~", "~newGrandTotal~");
 		this.mock(oCache).expects("setGrandTotalOutdated").withExactArgs(false);
 
 		// code under test
@@ -4504,6 +4514,7 @@ sap.ui.define([
 			assert.strictEqual(oResult, undefined);
 		});
 	});
+});
 
 	//*********************************************************************************************
 	QUnit.test("readGrandTotal: request failed", function (assert) {
