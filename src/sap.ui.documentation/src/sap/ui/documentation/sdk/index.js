@@ -183,7 +183,13 @@
                                     }
                                 });
                                 } else if (eMessage.data.reason === "set") {
+                                    var sCurrentDensity = Array.prototype.find.call(document.body.classList, function(el){
+                                        return el.includes("sapUiSize");
+                                    });
                                     setDensityClass(eMessage.data.data.density);
+                                    if (sCurrentDensity !== eMessage.data.data.density) {
+                                        Core.notifyContentDensityChanged();
+                                    }
                                     Core.getConfiguration().setRTL(eMessage.data.data.RTL);
                                     Core.applyTheme(eMessage.data.data.theme);
                                 }
