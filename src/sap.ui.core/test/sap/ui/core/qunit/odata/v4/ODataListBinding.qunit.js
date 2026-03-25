@@ -12087,6 +12087,7 @@ sap.ui.define([
 				}
 			};
 
+		oBinding.mCanUseCachePromiseByChildPath = "~mCanUseCachePromiseByChildPath~";
 		this.mock(this.oModel).expects("releaseKeepAliveBinding").withExactArgs("/path")
 			.returns(oTemporaryBinding);
 		this.mock(_Helper).expects("clone").withExactArgs("~mQueryOptions~")
@@ -12105,6 +12106,7 @@ sap.ui.define([
 			oCache);
 
 		assert.strictEqual(oBinding.mLateQueryOptions, "~mQueryOptionsClone~");
+		assert.deepEqual(oBinding.mCanUseCachePromiseByChildPath, {});
 		assert.strictEqual(Object.keys(oBinding.mPreviousContextsByPath).length, 2);
 		assert.strictEqual(oBinding.mPreviousContextsByPath["/path(1)"], oContext1);
 		assert.strictEqual(oBinding.mPreviousContextsByPath["/path(2)"], oContext2);
@@ -12118,6 +12120,7 @@ sap.ui.define([
 				{$$getKeepAliveContext : true});
 
 		oBinding.mLateQueryOptions = "~mLateQueryOptions~";
+		oBinding.mCanUseCachePromiseByChildPath = "~mCanUseCachePromiseByChildPath~";
 		this.mock(this.oModel).expects("releaseKeepAliveBinding").withExactArgs("/path")
 			.returns(undefined);
 
@@ -12125,6 +12128,8 @@ sap.ui.define([
 		assert.strictEqual(oBinding.getCacheAndMoveKeepAliveContexts("path"), undefined);
 
 		assert.strictEqual(oBinding.mLateQueryOptions, "~mLateQueryOptions~");
+		assert.strictEqual(oBinding.mCanUseCachePromiseByChildPath,
+			"~mCanUseCachePromiseByChildPath~");
 		assert.strictEqual(Object.keys(oBinding.mPreviousContextsByPath).length, 0);
 	});
 
@@ -12133,21 +12138,25 @@ sap.ui.define([
 		var oBinding = this.bindList("/path");
 
 		oBinding.mLateQueryOptions = "~mLateQueryOptions~";
+		oBinding.mCanUseCachePromiseByChildPath = "~mCanUseCachePromiseByChildPath~";
 		this.mock(this.oModel).expects("releaseKeepAliveBinding").never();
 
 		// code under test
 		assert.strictEqual(oBinding.getCacheAndMoveKeepAliveContexts("path"), undefined);
 
 		assert.strictEqual(oBinding.mLateQueryOptions, "~mLateQueryOptions~");
+		assert.strictEqual(oBinding.mCanUseCachePromiseByChildPath,
+			"~mCanUseCachePromiseByChildPath~");
 		assert.strictEqual(Object.keys(oBinding.mPreviousContextsByPath).length, 0);
 	});
 
 	//*********************************************************************************************
 ["foo", "bar", "$$patchWithoutSideEffects", "$$updateGroupId"].forEach(function (sParameter) {
-	QUnit.test("getCacheAndMoveKeepAliveContexts: mismatch in" + sParameter, function (assert) {
+	QUnit.test("getCacheAndMoveKeepAliveContexts: mismatch in " + sParameter, function (assert) {
 		var oBinding = this.bindList("/path"),
 			oTemporaryBinding = {};
 
+		oBinding.mCanUseCachePromiseByChildPath = "~mCanUseCachePromiseByChildPath~";
 		this.mock(this.oModel).expects("releaseKeepAliveBinding").twice().withExactArgs("/path")
 			.returns(oTemporaryBinding);
 
@@ -12168,6 +12177,9 @@ sap.ui.define([
 			// code under test
 			oBinding.getCacheAndMoveKeepAliveContexts("path");
 		}, new Error(oBinding + ": parameter does not match getKeepAliveContext: " + sParameter));
+
+		assert.strictEqual(oBinding.mCanUseCachePromiseByChildPath,
+			"~mCanUseCachePromiseByChildPath~");
 	});
 });
 
