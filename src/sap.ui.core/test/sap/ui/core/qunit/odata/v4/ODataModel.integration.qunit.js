@@ -5528,7 +5528,7 @@ sap.ui.define([
 			that.expectRequest("#2 SalesOrderList('1')/SO_2_SOITEM('0010')/SOITEM_2_PRODUCT"
 					+ "?sap-client=123&$select=ProductID"
 					+ "&$expand=PRODUCT_2_BP($select=BusinessPartnerID,CompanyName)", {
-					"@odata.etag" : oFixture.lateEtag,
+					"@odata.etag" : oFixture.lateETag,
 					ProductID : oFixture.lateID,
 					PRODUCT_2_BP : {
 						BusinessPartnerID : "0100000005",
