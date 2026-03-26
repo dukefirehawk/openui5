@@ -1,7 +1,8 @@
 {
 	"sap.app": {
-		"id": "cardsdemo.navigationService.object2",
-		"type": "card"
+		"id": "cardsdemo.object.navigation",
+		"type": "card",
+		"i18n": "i18n/i18n.properties"
 	},
 	"sap.card": {
 		"type": "Object",
@@ -15,7 +16,7 @@
 		],
 		"data": {
 			"request": {
-				"url": "../objectcontent/employee.json"
+				"url": "./employee.json"
 			}
 		},
 		"header": {

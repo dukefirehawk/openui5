@@ -1,0 +1,94 @@
+{
+	"sap.app": {
+		"id": "cardsdemo.navigationAction.table",
+		"type": "card"
+	},
+	"sap.card": {
+		"type": "Table",
+		"header": {
+			"title": "Navigation Action - Table Card",
+			"icon": {
+				"src": "sap-icon://accept"
+			},
+			"status": {
+				"text": "5 of 20"
+			}
+		},
+		"content": {
+			"data": {
+				"json": [
+					{
+						"Name": "Comfort Easy",
+						"Category": "PDA & Organizers",
+						"url": "https://www.sap.com",
+						"identifierUrl": "https://www.sap.com/corporate/en/company/innovation.html"
+					},
+					{
+						"Name": "ITelO Vault",
+						"Category": "PDA & Organizers",
+						"url": "https://www.sap.com"
+					},
+					{
+						"Name": "Notebook Professional 15",
+						"Category": "Notebooks",
+						"url": "https://www.sap.com"
+					},
+					{
+						"Name": "Ergo Screen E-I",
+						"Category": "Monitors",
+						"identifierUrl": "https://www.sap.com/corporate/en/company/innovation.html"
+					},
+					{
+						"Name": "Laser Professional Eco",
+						"Category": "Printers",
+						"identifierUrl": "https://www.sap.com/corporate/en/company/innovation.html"
+					}
+				]
+			},
+			"row": {
+				"columns": [
+					{
+						"title": "Name",
+						"value": "{Name}"
+					},
+					{
+						"title": "Category",
+						"value": "{Category}",
+						"actions": [
+							{
+								"type": "Navigation",
+								"enabled": "{= ${url}}",
+								"parameters": {
+									"url": "{url}"
+								}
+							}
+						]
+					},
+					{
+						"title": "Number",
+						"value": "356865544",
+						"identifier": true,
+						"actions": [
+							{
+								"type": "Navigation",
+								"enabled": "{= ${identifierUrl}}",
+								"parameters": {
+									"url": "{identifierUrl}"
+								}
+							}
+						]
+					}
+				],
+				"actions": [
+					{
+						"type": "Navigation",
+						"enabled": "{= ${url}}",
+						"parameters": {
+							"url": "{url}"
+						}
+					}
+				]
+			}
+		}
+	}
+}

@@ -1,21 +1,13 @@
 {
-	"_version": "1.8.0",
 	"sap.app": {
-		"id": "cardsdemo.navigationService.card1",
+		"id": "cardsdemo.navigationAction.list",
 		"type": "card"
-	},
-	"sap.ui5": {
-		"services": {
-			"Navigation2": {
-				"factoryName": "cardsdemo.service.SampleNavigationFactory"
-			}
-		}
 	},
 	"sap.card": {
 		"type": "List",
 		"header": {
-			"title": "Request List Content Card",
-			"subtitle": "Card Subtitle",
+			"title": "Navigation Action - List Card",
+			"subtitle": "Header and item actions",
 			"icon": {
 				"src": "sap-icon://accept"
 			},
@@ -25,7 +17,6 @@
 			"actions": [
 				{
 					"type": "Navigation",
-					"service": "Navigation2",
 					"parameters": {
 						"url": "https://www.sap.com"
 					}
@@ -35,9 +26,8 @@
 		"content": {
 			"data": {
 				"request": {
-					"url": "../someitems_services.json"
-				},
-				"path": "/"
+					"url": "./items.json"
+				}
 			},
 			"item": {
 				"icon": {
@@ -52,11 +42,9 @@
 				"actions": [
 					{
 						"type": "Navigation",
-						"target": "_blank",
-						"enabled": "{= ${url}}",
-						"url": "{url}",
+						"enabled": "{= ${url} !== ''}",
 						"parameters": {
-							"somekey": "{someparam}"
+							"url": "{url}"
 						}
 					}
 				]
