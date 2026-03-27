@@ -1,15 +1,16 @@
-/* ======================================================= */
-/* Base CSS for control sap.ui.ux3/FacetFilterList.control */
-/* ======================================================= */
+/* ========================================== */
+/* CSS for control sap.ui.ux3/FaceFilterList  */
+/* base theme                                 */
+/* ========================================== */
 
 /* Header */
 .sapUiUx3FFLstHead {
 	box-sizing: border-box;
 	display: block;
 	line-height: 25px;
-	border-top: 1px solid @sapUiListHeaderBorderColor;
-	border-left: 1px solid @sapUiListHeaderBorderColor;
-	border-right: 1px solid @sapUiListHeaderBorderColor;
+	border-top: 1px solid var(--sapList_HeaderBorderColor);
+	border-left: 1px solid var(--sapList_HeaderBorderColor);
+	border-right: 1px solid var(--sapList_HeaderBorderColor);
 	background-color: @sapUiExtraLightBG;
 }
 
@@ -39,9 +40,8 @@
 /* List Box */
 .sapUiUx3FFLst > .sapUiLbx {
 	width: 100%;
-	border-bottom: 1px solid @sapUiListHeaderBorderColor;
+	border-bottom: 1px solid var(--sapList_HeaderBorderColor);
 	position: relative;
 	height: 92%;
 	height: ~"calc(100% - 29px)";
-	height: ~"-webkit-calc(100% - 29px)";
 }
