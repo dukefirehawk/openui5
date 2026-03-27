@@ -3869,6 +3869,14 @@ sap.ui.define([
 							{
 								myKey: 'item1',
 								myText: 'item A'
+							},
+							{
+								myKey: 'item2',
+								myText: 'item AB'
+							},
+							{
+								myKey: 'item3',
+								myText: 'item C'
 							}
 						]
 					},
@@ -3965,9 +3973,17 @@ sap.ui.define([
 			"VSD's filter detail title isn't referenced when the filter detail page isn't currently opened");
 	});
 
-	QUnit.test("VSD sets adjusts Dialog's ariaLabelledBy for the detailed filter page", function (assert) {
+	QUnit.test("VSD sets adjusts Dialog's ariaLabelledBy for the detailed filter page and search field", function (assert) {
 		// Prepare
-		var aAriaLabelledBy;
+		var fnIsVisible = function(oItem) {
+			return oItem.getVisible();
+		};
+		var aAriaLabelledBy,
+			oAnnounceSpy = this.spy(InvisibleMessage.prototype, "announce"),
+			aFilteredItems,
+			searchFieldAriaId,
+			searchFieldAriaText,
+			expectedText = this.oResourceBundle.getText('VIEWSETTINGS_SEARCHFIELD_ARIA', this.oVSD._filterList.getItems()[1].data("item").getText());
 
 		function openAndNavigateToFilterDetailsPage(oVSD) {
 			oVSD.open("filter");
@@ -3983,11 +3999,28 @@ sap.ui.define([
 		oCore.applyChanges();
 
 		aAriaLabelledBy = this.oVSD._getDialog().getAriaLabelledBy();
+		searchFieldAriaId = this.oVSD._getFilterSearchField().getAriaLabelledBy()[0];
+		searchFieldAriaText = sap.ui.getCore().byId(searchFieldAriaId).getText();
 
 		// Assert
 		assert.strictEqual(aAriaLabelledBy[0], this.oVSD._sFilterDetailTitleLabelId,  "The filter detail title is applied");
 		assert.strictEqual(aAriaLabelledBy.indexOf(this.oVSD._sTitleLabelId), -1,
 			"VSD's standard title isn't referenced in aria-labelledby for the filter details");
+		assert.strictEqual(searchFieldAriaText, expectedText, "Search filed has correct aria-labelledby");
+
+		// Arrange
+		var oSearchField = this.oVSD._filterSearchField;
+
+		//Act
+		oSearchField.setValue("item A");
+		oSearchField.fireLiveChange();
+		aFilteredItems = this.oVSD._filterDetailList.getItems().filter(fnIsVisible);
+
+		// Assert
+		assert.equal(oAnnounceSpy.args[0][0], this.oResourceBundle.getText('VIEWSETTINGS_FOUND_RESULTS', aFilteredItems.length), "Number of the found items should be announced.");
+
+		//cleanup
+		oAnnounceSpy.restore();
 
 	});
 
