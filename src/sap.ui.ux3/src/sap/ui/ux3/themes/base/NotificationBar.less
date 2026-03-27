@@ -1,7 +1,7 @@
-/* ================================================== */
-/* CSS for control sap.ui.ux3/NotificationBar.control */
-/* Base                                               */
-/* ================================================== */
+/* =========================================== */
+/* CSS for control sap.ui.ux3/NotificationBar  */
+/* base theme                                  */
+/* =========================================== */
 
 .sapUiNotificationBar {
 	box-sizing: border-box;
@@ -13,22 +13,14 @@
 	width: inherit;
 	background-color: @sapUiNotificationBarBG;
 	box-shadow: none;
-	padding: 0 15px 0px 6px;
+	padding: 0 15px 0 6px;
 	border-top-left-radius: 6px;
 	border-top-right-radius: 6px;
 	/* while there is no drag&drop the cursor should be default */
-	/*cursor: move;*/
 	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
 	user-select: none;
 	outline: none;
 	z-index: 2; /* needed when the NotiBar has to cover the Table's row headers */
-}
-
-.sapUiNotificationBarMaximized {
-	/* height needs to be calculated corresponding to current window height */
-	/*height: @sapUiNotificationBarHeightMaximized;*/
 }
 
 .sapUiNotificationBarMinimized {
@@ -65,7 +57,6 @@
 	border-top-right-radius: 3px;
 	background-color: @sapUiNotificationBarBG;
 	cursor: pointer;
-	-webkit-transition: all 0.2s linear;
 	transition: all 0.2s linear;
 }
 
@@ -80,7 +71,7 @@
 	background-repeat: no-repeat;
 	height: 16px;
 	background-position: center center;
-	font-family: 'SAP-icons';
+	font-family: var(--sapContent_IconFontFamily);
 	color: white;
 	font-size: 16px;
 	opacity: 0.5;
@@ -95,22 +86,22 @@
 
 /* Enlarge Arrow */
 .sapUiBarToggleArrowUp::before {
-	content: "\e200";
+	content: '\e200';
 }
 
 /* Minimize Arrow */
 .sapUiBarToggleArrowDown::before {
-	content: "\e1f9";
+	content: '\e1f9';
 }
 
 /* BarUp */
 .sapUiBarToggleBarUp::before {
-	content: "\e1e9";
+	content: '\e1e9';
 }
 
 /* BarDown */
 .sapUiBarToggleBarDown::before {
-	content: "\e1ea";
+	content: '\e1ea';
 }
 
 .sapUiBarToggleArrowUp.sapUiBarToggleHide {
@@ -118,7 +109,7 @@
 }
 
 .sapUiBarToggleArrowDown.sapUiBarToggleHide {
-  display: none;
+	display: none;
 }
 
 .sapUiBarToggleBarUp.sapUiBarToggleHide {
@@ -130,15 +121,15 @@
 }
 
 .sapUiNotifiers {
-  padding: 0px;
-  margin: 0px;
-  height: inherit;
+	padding: 0;
+	margin: 0;
+	height: inherit;
 }
 
 .sapUiNotifier {
 	/* this is needed to show the Notifier's icon on tablets. Otherwise the icon would be only visible if
 	the windows i.e. */
-	-webkit-transform: translate3d(0, 0, 0);
+	transform: translate3d(0, 0, 0);
 	display: inline-block;
 	position: relative;
 	font-size: 12px;
@@ -158,7 +149,8 @@
 	background-color: @sapUiNotifierHoverColor;
 }
 
-.sapUiNotifier img, .sapUiNotifier .sapUiIcon {
+.sapUiNotifier img,
+.sapUiNotifier .sapUiIcon {
 	position: relative;
 	top: 8px;
 	left: 8px;
@@ -167,11 +159,13 @@
 	cursor: pointer;
 }
 
-.sapUiNotifier:hover img, .sapUiNotifier:hover .sapUiIcon {
+.sapUiNotifier:hover img,
+.sapUiNotifier:hover .sapUiIcon {
 	opacity: 1;
 }
 
 .sapUiNotifierSeparator {
+
 	.sapUiNotifier;
 	background-color: @sapUiNotifierSeparator;
 	height: 24px;
@@ -187,7 +181,7 @@
 	max-width: 250px;
 }
 
-html[dir=rtl] .sapUiNotifierCallout {
+html[dir='rtl'] .sapUiNotifierCallout {
 	max-width: 250px;
 }
 
@@ -197,13 +191,10 @@ html[dir=rtl] .sapUiNotifierCallout {
 
 .sapUiNotifierCallout .sapUiCltArr.sapUiCltBaseArr {
 	position: absolute;
-	-webkit-transform: rotate(0deg);
 	transform: rotate(0deg);
 	background-color: transparent;
 	/* currently the values must be defined separately to ensure the generating of the CSS-file */
-	/*border-color: rgba(44, 44, 44, 0.92) transparent transparent transparent;*/
 	border-top-color: @sapUiNotificationBarCalloutArr;
-	/*border-top-color: @sapUiNotificationBarBG;*/
 	border-left-color: transparent;
 	border-right-color: transparent;
 	border-bottom-color: transparent;
@@ -220,7 +211,7 @@ html[dir=rtl] .sapUiNotifierCallout {
 }
 
 .sapUiNotifierContainer {
-	margin: 0px 0px;
+	margin: 0 0;
 	display: inline;
 }
 
@@ -232,7 +223,7 @@ html[dir=rtl] .sapUiNotifierCallout {
 .sapUiNotifierTitle {
 	background-color: transparent;
 	color: white;
-	margin: 5px 0px;
+	margin: 5px 0;
 	font-size: 14px;
 	font-weight: bold;
 	width: 100%;
@@ -272,7 +263,7 @@ html[dir=rtl] .sapUiNotifierCallout {
 .sapUiNotificationBarCltSep {
 	background-color: @sapUiNotifierSeparator;
 	height: 1px;
-	margin: 0px;
+	margin: 0;
 }
 
 li.sapUiNotificationMessageItem {
@@ -324,8 +315,6 @@ li.sapUiInPlaceMessage > div.sapUiNotifierMessageText:focus {
 	max-height: 30px;
 	overflow: hidden;
 	-webkit-user-select: text;
-	-moz-user-select: text;
-	-ms-user-select: text;
 	user-select: text;
 }
 
@@ -343,7 +332,7 @@ li.sapUiInPlaceMessage > div.sapUiNotifierMessageText:focus {
 	top: 4px;
 	position: absolute;
 	box-sizing: border-box;
-	background-color: @sapUiHighlight;
+	background-color: var(--sapHighlightColor);
 	border: 1px solid @sapUiWhiteBG;
 	padding: 0 3px;
 	border-radius: 7px;
@@ -361,7 +350,7 @@ li.sapUiInPlaceMessage > div.sapUiNotifierMessageText:focus {
 }
 
 .sapUiNotifierMessageCount.sapUiMessage.sapUiMessageSuccess {
-	background-color: @sapUiButtonAcceptBackground;
+	background-color: var(--sapButton_Accept_Background);
 }
 
 .sapUiNotifierMessageCount.sapUiMessage.sapUiMessageWarning {
@@ -370,5 +359,5 @@ li.sapUiInPlaceMessage > div.sapUiNotifierMessageText:focus {
 }
 
 .sapUiNotifierMessageCount.sapUiMessage.sapUiMessageError {
-	background-color: @sapUiErrorBorder;
+	background-color: var(--sapErrorBorderColor);
 }
