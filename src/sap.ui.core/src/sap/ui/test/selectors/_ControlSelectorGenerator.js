@@ -35,6 +35,7 @@
       * @param {object} oOptions.settings preferences for the selector e.g. which is the most preferred strategy
       * @param {boolean} oOptions.settings.preferViewId true if selectors with view-relative ID should have higher priority than selectors with global ID. Default value is false.
       * @param {boolean} oOptions.settings.preferViewNameAsViewLocator true if the view locator in generated selectors should always be viewName instead of viewId. Default value is false.
+      * @param {boolean} oOptions.settings.separateViewNamespace true if the fully qualified viewName should be split into viewName and viewNamespace. Default value is false.
       * @returns {Promise<object|Array|Error>} a plain object representation of a control or Error if none can be generated
       * If multiple selectors are requested, an array is returned.
       * @private

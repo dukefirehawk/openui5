@@ -137,6 +137,7 @@ sap.ui.define([
          * @param {object} oView the view to examine
          * @param {object} [mSettings] optional settings
          * @param {boolean} [mSettings.preferViewNameAsViewLocator=false] if true, always use viewName instead of viewId
+         * @param {boolean} [mSettings.separateViewNamespace=false] if true, split the fully qualified viewName into viewName and viewNamespace
          * @returns {object} object with viewName and/or viewId, or empty object
          * @private
          */
@@ -151,15 +152,46 @@ sap.ui.define([
                 }).filter(function (oElement) {
                     return oElement.getViewName() === sViewName;
                 });
-                return aViewsWithSameName.length > 1 ? {} : {
-                    viewName: sViewName
-                };
+                if (aViewsWithSameName.length > 1) {
+                    return {};
+                }
+                return this._getViewNameSelector(sViewName, mSettings);
             } else {
+                var mResult = this._getViewNameSelector(sViewName, mSettings);
+                mResult.viewId = sViewId;
+                return mResult;
+            }
+        },
+
+        /**
+         * Returns a selector fragment with viewName and optionally viewNamespace.
+         * When mSettings.separateViewNamespace is true, splits the fully qualified name at the last dot.
+         * @param {string} sViewName the fully qualified view name
+         * @param {object} [mSettings] optional settings
+         * @returns {object} object with viewName and optionally viewNamespace
+         * @private
+         */
+        _getViewNameSelector: function (sViewName, mSettings) {
+            var bSeparateViewNamespace = mSettings && mSettings.separateViewNamespace;
+            return bSeparateViewNamespace ? this._splitViewName(sViewName) : { viewName: sViewName };
+        },
+
+        /**
+         * Splits a fully qualified view name into viewName and viewNamespace parts.
+         * The split happens at the last dot: everything before is viewNamespace, everything after is viewName.
+         * @param {string} sFullViewName the fully qualified view name, e.g. "sap.my.app.MyView"
+         * @returns {object} object with viewName and optionally viewNamespace
+         * @private
+         */
+        _splitViewName: function (sFullViewName) {
+            var iLastDotIndex = sFullViewName.lastIndexOf(".");
+            if (iLastDotIndex > -1) {
                 return {
-                    viewName: sViewName,
-                    viewId: sViewId
+                    viewNamespace: sFullViewName.substring(0, iLastDotIndex),
+                    viewName: sFullViewName.substring(iLastDotIndex + 1)
                 };
             }
+            return { viewName: sFullViewName };
         }
     });
 

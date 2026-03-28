@@ -163,6 +163,72 @@ sap.ui.define([
 		}).finally(fnDone);
 	});
 
+	QUnit.module("_ViewID - separateViewNamespace", {
+		beforeEach: function (assert) {
+			return Promise.all([
+				XMLView.create({
+					id: "nsView",
+					definition: createViewContent("sap.my.app.namespace.MyView")
+				}),
+				XMLView.create({
+					id: "myView2",
+					definition: createViewContent("myView2")
+				})
+			]).then(function (aViews) {
+				this.oViewWithNamespace = aViews[0].placeAt("qunit-fixture");
+				this.oViewNoDots = aViews[1].placeAt("qunit-fixture");
+				return nextUIUpdate();
+			}.bind(this), function (oErr) {
+				assert.strictEqual(oErr, undefined, "failed to load view");
+			});
+		},
+		afterEach: function () {
+			this.oViewWithNamespace.destroy();
+			this.oViewNoDots.destroy();
+		}
+	});
+
+	QUnit.test("Should split viewName into viewNamespace and viewName when separateViewNamespace is true", function (assert) {
+		var fnDone = assert.async();
+		_ControlSelectorGenerator._generate({
+			control: Element.closestTo("#nsView form input"),
+			includeAll: true,
+			settings: { preferViewNameAsViewLocator: true, separateViewNamespace: true }
+		}).then(function (aSelector) {
+			var mViewIdSelector = aSelector[1][0];
+			assert.strictEqual(mViewIdSelector.viewName, "MyView", "Should have short viewName");
+			assert.strictEqual(mViewIdSelector.viewNamespace, "sap.my.app.namespace", "Should have viewNamespace");
+			assert.strictEqual(mViewIdSelector.id, "mySearch", "Should have relative ID");
+			assert.ok(!mViewIdSelector.viewId, "Should not include viewId");
+		}).finally(fnDone);
+	});
+
+	QUnit.test("Should keep full viewName when separateViewNamespace is false", function (assert) {
+		var fnDone = assert.async();
+		_ControlSelectorGenerator._generate({
+			control: Element.closestTo("#nsView form input"),
+			includeAll: true,
+			settings: { preferViewNameAsViewLocator: true, separateViewNamespace: false }
+		}).then(function (aSelector) {
+			var mViewIdSelector = aSelector[1][0];
+			assert.strictEqual(mViewIdSelector.viewName, "sap.my.app.namespace.MyView", "Should have full viewName");
+			assert.ok(!mViewIdSelector.viewNamespace, "Should not have separate viewNamespace");
+		}).finally(fnDone);
+	});
+
+	QUnit.test("Should not add viewNamespace when viewName has no dots", function (assert) {
+		var fnDone = assert.async();
+		_ControlSelectorGenerator._generate({
+			control: Element.closestTo("#myView2 form input"),
+			includeAll: true,
+			settings: { preferViewNameAsViewLocator: true, separateViewNamespace: true }
+		}).then(function (aSelector) {
+			var mViewIdSelector = aSelector[1][0];
+			assert.strictEqual(mViewIdSelector.viewName, "myView2", "Should keep viewName as-is");
+			assert.ok(!mViewIdSelector.viewNamespace, "Should not add viewNamespace for non-dotted name");
+		}).finally(fnDone);
+	});
+
 	function createViewContent (sViewName) {
 		return '<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" viewName="' + sViewName + '">' +
 			'<App id="myApp">' +

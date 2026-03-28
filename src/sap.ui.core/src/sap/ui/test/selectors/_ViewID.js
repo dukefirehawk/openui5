@@ -23,6 +23,7 @@ sap.ui.define([
          * @param {object} [mSettings] optional settings
          * @param {boolean} [mSettings.preferViewNameAsViewLocator=false] if true, use viewName instead of viewId as the view locator,
          * and include private sub-controls whose view-relative IDs contain hyphens
+         * @param {boolean} [mSettings.separateViewNamespace=false] if true, split the fully qualified viewName into viewName and viewNamespace
          * @returns {object} a plain object representation of a control. Contains viewName and view relative ID.
          * If the selector cannot be constructed, undefined is returned.
          * @private
@@ -53,7 +54,7 @@ sap.ui.define([
 
                         if (bPreferViewName || ManagedObjectMetadata.isGeneratedId(sViewId)) {
                             this._oLogger.debug("Control " + oControl + " has view with viewName " + sViewName);
-                            mResult.viewName = sViewName;
+                            Object.assign(mResult, this._getViewNameSelector(sViewName, mSettings));
                         } else {
                             this._oLogger.debug("Control " + oControl + " has view with stable ID " + sViewId);
                             mResult.viewId = sViewId;
