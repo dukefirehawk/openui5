@@ -1635,9 +1635,11 @@ sap.ui.define([
 			[false, true].forEach(function (bLengthFinal) {
 				[false, true].forEach(function (bMoreContexts) {
 					[undefined, false, true].forEach(function (bOutdated) {
+						[0, 1].forEach(function (iActiveContexts) {
 	const sTitle = "fetchContexts: async=" + bAsync + ", groupLock=" + bGroupLock
 		+ ", readGroupLock=" + bReadGroupLock + ", lengthFinal=" + bLengthFinal
-		+ ", moreContexts=" + bMoreContexts + ", outdated=" + bOutdated;
+		+ ", moreContexts=" + bMoreContexts + ", outdated=" + bOutdated
+		+ ", activeContexts=" + iActiveContexts;
 
 	QUnit.test(sTitle, function (assert) {
 		var oBinding = this.bindList("/EMPLOYEES"),
@@ -1649,6 +1651,7 @@ sap.ui.define([
 		oBinding.oReadGroupLock = oReadGroupLock;
 		oBinding.bLengthFinal = bLengthFinal;
 		oBinding.aContexts = bMoreContexts ? [{}, {}] : [{}];
+		oBinding.iActiveContexts = iActiveContexts;
 		oBinding.iCreatedContexts = 1;
 
 		this.mock(oBinding).expects("lockGroup").exactly(bGroupLock || bReadGroupLock ? 0 : 1)
@@ -1661,8 +1664,13 @@ sap.ui.define([
 		this.mock(oBinding.oHeaderContext).expects("isOutdated").withExactArgs()
 			.exactly(bLengthFinal || bMoreContexts ? 0 : 1)
 			.returns(bOutdated);
-		this.mock(oBinding.oHeaderContext).expects("setOutdated").withExactArgs(false)
-			.exactly(bLengthFinal || bMoreContexts || bOutdated === undefined ? 0 : 1);
+		const bSetOutdated = !(bLengthFinal || bMoreContexts || bOutdated === undefined);
+		this.mock(oBinding).expects("setOutdated")
+			.exactly(bSetOutdated && iActiveContexts ? 1 : 0)
+			.withExactArgs();
+		this.mock(oBinding.oHeaderContext).expects("setOutdated")
+			.exactly(bSetOutdated && !iActiveContexts ? 1 : 0)
+			.withExactArgs(false);
 		this.mock(oBinding).expects("createContexts")
 			.withExactArgs(1, sinon.match.same(oResult.value))
 			.returns(SyncPromise.resolve("~bChanged~"));
@@ -1682,6 +1690,7 @@ sap.ui.define([
 
 		return oPromise;
 	});
+						});
 					});
 				});
 			});
@@ -5395,6 +5404,8 @@ sap.ui.define([
 					.withExactArgs(oFixture.sGroupId || "$auto")
 					.returns(oFixture.sGroupId === "deferred");
 				oBindingMock.expects("getUpdateGroupId").withExactArgs().returns(oFixture.sGroupId);
+				oBindingMock.expects("setOutdated").exactly(oFixture.bInactive ? 0 : 1)
+					.withExactArgs();
 				oBindingMock.expects("lockGroup")
 					.withExactArgs(oFixture.bInactive
 							? "$inactive." + oFixture.sGroupId
@@ -5682,6 +5693,7 @@ sap.ui.define([
 
 		this.mock(oBinding).expects("isTransient").withExactArgs().returns(false);
 		this.mock(oBinding).expects("getUpdateGroupId").withExactArgs().returns("$auto");
+		this.mock(oBinding).expects("setOutdated").never();
 
 		assert.throws(function () {
 			// code under test
@@ -6137,6 +6149,7 @@ sap.ui.define([
 		// Note: autoExpandSelect at model would be required for hierarchyQualifier, but that leads
 		// too far :-(
 		oBinding.mParameters.$$aggregation = {hierarchyQualifier : "X"};
+		this.mock(oBinding).expects("setOutdated").never();
 
 		assert.throws(function () {
 			// code under test
@@ -6196,6 +6209,7 @@ sap.ui.define([
 				iIndex : "~parentIndex~"
 			};
 		oBinding.aContexts[2] = oParentContext;
+		this.mock(oBinding).expects("setOutdated").never();
 		const oInitialData = {"@$ui5.node.parent" : oParentContext};
 		const oEntityData = {};
 		this.mock(_Helper).expects("publicClone")
@@ -6282,6 +6296,8 @@ sap.ui.define([
 		this.mock(oBinding).expects("isTransient").twice().withExactArgs().returns(false);
 		this.mock(oBinding).expects("checkDeepCreate").never();
 		this.mock(oBinding).expects("isRelative").never();
+		this.mock(oBinding).expects("setOutdated").exactly(bRecursiveHierarchy ? 0 : 1)
+			.withExactArgs();
 		this.mock(_Helper).expects("publicClone")
 			.withExactArgs(sinon.match.same(oInitialData), true).returns("~oEntityData~");
 		this.mock(oBinding).expects("lockGroup")
@@ -6356,6 +6372,7 @@ sap.ui.define([
 		this.mock(oBinding).expects("isTransient").twice().withExactArgs().returns(false);
 		this.mock(oBinding).expects("checkDeepCreate").never();
 		this.mock(oBinding).expects("isRelative").never();
+		this.mock(oBinding).expects("setOutdated").never();
 		const oParentContext = {
 				getCanonicalPath : mustBeMocked,
 				isExpanded : mustBeMocked,
@@ -10379,13 +10396,18 @@ sap.ui.define([
 	});
 
 	//*********************************************************************************************
-	QUnit.test("doSetProperty", function (assert) {
+[true, false].forEach(function (bTransientPredicate) {
+	QUnit.test("doSetProperty: transient predicate=" + bTransientPredicate, function (assert) {
 		const oBinding = this.bindList("/EMPLOYEES");
-		this.mock(oBinding).expects("setOutdated").withExactArgs();
+		this.mock(oBinding).expects("setOutdated").exactly(bTransientPredicate ? 0 : 1)
+			.withExactArgs();
 
 		// code under test
-		assert.strictEqual(oBinding.doSetProperty(), undefined);
+		assert.strictEqual(
+			oBinding.doSetProperty(bTransientPredicate ? "($uid=...)/foo" : "(42)/foo"),
+			undefined);
 	});
+});
 
 	//*********************************************************************************************
 [false, true].forEach((bDataAggregation) => {
@@ -11737,6 +11759,7 @@ sap.ui.define([
 		oBindingMock.expects("fireEvent")
 			.withExactArgs("createActivate", {context : "~oContext~"}, true)
 			.returns(false);
+		oBindingMock.expects("setOutdated").never();
 
 		// code under test
 		oBinding.fireCreateActivate("~oContext~");
@@ -11746,6 +11769,7 @@ sap.ui.define([
 		oBindingMock.expects("fireEvent")
 			.withExactArgs("createActivate", {context : "~oContext~"}, true)
 			.returns(true);
+		oBindingMock.expects("setOutdated").withExactArgs();
 
 		// code under test
 		oBinding.fireCreateActivate("~oContext~");
