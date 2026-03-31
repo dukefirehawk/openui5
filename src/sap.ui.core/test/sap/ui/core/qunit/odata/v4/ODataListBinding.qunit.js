@@ -11762,7 +11762,7 @@ sap.ui.define([
 		oBindingMock.expects("setOutdated").never();
 
 		// code under test
-		oBinding.fireCreateActivate("~oContext~");
+		assert.strictEqual(oBinding.fireCreateActivate("~oContext~"), false);
 
 		assert.strictEqual(oBinding.iActiveContexts, 40);
 
@@ -11772,7 +11772,7 @@ sap.ui.define([
 		oBindingMock.expects("setOutdated").withExactArgs();
 
 		// code under test
-		oBinding.fireCreateActivate("~oContext~");
+		assert.strictEqual(oBinding.fireCreateActivate("~oContext~"), true);
 
 		assert.strictEqual(oBinding.iActiveContexts, 41);
 	});
