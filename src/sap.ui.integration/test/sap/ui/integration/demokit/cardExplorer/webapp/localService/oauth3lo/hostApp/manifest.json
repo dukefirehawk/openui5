@@ -1,8 +1,20 @@
 {
+	"_version": "1.83.1",
+	"$schema": "https://raw.githubusercontent.com/SAP/ui5-manifest/v1.83.1/schema.json",
 	"sap.app": {
 		"id": "sap.ui.integration.localServices.oath3lo.hostApp",
+		"type": "application",
+		"title": "OAuth 3LO Host App",
 		"applicationVersion": {
 			"version": "1.0.0"
+		}
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
 		}
 	},
 	"sap.ui5": {
@@ -12,9 +24,14 @@
 			"async": true
 		},
 		"dependencies": {
+			"minUI5Version": "1.145.0",
 			"libs": {
 				"sap.m": {}
 			}
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
 		}
 	}
 }

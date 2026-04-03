@@ -1,11 +1,13 @@
 {
 	"_version": "1.83.1",
+	"$schema": "https://raw.githubusercontent.com/SAP/ui5-manifest/v1.83.1/schema.json",
 	"sap.app": {
 		"type": "application",
 		"id": "sap.ui.integration.sample.preview.allModes",
 		"applicationVersion": {
 			"version": "1.0.0"
-		}
+		},
+		"title": "Preview All Modes"
 	},
 	"sap.ui5": {
 		"rootView": {
@@ -14,12 +16,25 @@
 			"async": true
 		},
 		"dependencies": {
+			"minUI5Version": "1.145.0",
 			"libs": {
 				"sap.ui.core": {},
 				"sap.f": {},
 				"sap.m": {},
 				"sap.ui.integration": {}
 			}
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		}
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
 		}
 	}
 }
