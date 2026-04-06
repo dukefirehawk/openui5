@@ -1272,19 +1272,13 @@ function(
 				//set the size to the content
 				if (!this._oManuallySetSize) {
 					oStyles.width = this.getContentWidth() || undefined;
-					oStyles.height = this.getContentHeight() || undefined;
 				} else {
 					oStyles.width = this._oManuallySetSize.width;
-					oStyles.height = this._oManuallySetSize.height;
 				}
 			}
 
 			if (oStyles.width == 'auto') {
 				oStyles.width = undefined;
-			}
-
-			if (oStyles.height == 'auto') {
-				oStyles.height = undefined;
 			}
 
 			if (bStretch && !bMessageType) {
@@ -1298,6 +1292,11 @@ function(
 				this.$().addClass('sapMDialogStretched');
 			}
 
+			const sContentHeight = this.getContentHeight();
+
+			if (!this.getStretch() && sContentHeight) {
+				$this.find('> section').css({ flexBasis: sContentHeight });
+			}
 			$this.css(oStyles);
 			$this.css(this._calcMaxSizes());
 
@@ -1333,16 +1332,8 @@ function(
 			var $dialog = this.$(),
 			$dialogContent = this.$('cont'),
 			sContentWidth = this.getContentWidth(),
-			iMaxDialogWidth = this._calcMaxSizes().maxWidth, // 90% of the max screen size
-			oSubHeaderDomRef = this.getSubHeader()?.getDomRef(),
-			oHeaderDomRef = (this.getCustomHeader() || this._header)?.getDomRef();
-
-		if (oHeaderDomRef || oSubHeaderDomRef) {
-			const iHeaderHeight = oHeaderDomRef ? oHeaderDomRef.getBoundingClientRect().height : 0;
-			const iSubHeaderHeight = oSubHeaderDomRef ? oSubHeaderDomRef.getBoundingClientRect().height : 0;
-
-			this.getDomRef().style.paddingTop = iHeaderHeight + iSubHeaderHeight + "px";
-		}
+			sContentHeight = this.getContentHeight(),
+			iMaxDialogWidth = this._calcMaxSizes().maxWidth; // 90% of the max screen size
 
 			//if height is set by manually resizing return;
 			if (this._oManuallySetSize) {
@@ -1350,6 +1341,10 @@ function(
 					width: 'auto'
 				});
 				return;
+			}
+
+			if (!this.getStretch() && sContentHeight && sContentHeight.includes("%")) {
+				$dialog.find('> section').css({ flexBasis: this._percentOfSize(this._getAreaDimensions().height, parseFloat(sContentHeight)) });
 			}
 
 			// Browsers except chrome do not increase the width of the container to include scrollbar (when width is auto). So we need to compensate
@@ -1454,20 +1449,15 @@ function(
 		 */
 		Dialog.prototype._calcMaxSizes = function () {
 			var oAreaDimensions = this._getAreaDimensions(),
-				$this = this.$(),
-				iHeaderHeight = $this.find(".sapMDialogTitleGroup").height() || 0,
-				iSubHeaderHeight = $this.find(".sapMDialogSubHeader").height() || 0,
-				iFooterHeight = $this.find("> footer").height() || 0,
-				iHeightAsPadding = iHeaderHeight + iSubHeaderHeight + iFooterHeight,
 				iMaxHeight,
 				iMaxWidth;
 
 			if (Device.system.phone && this.getStretch()) {
 				iMaxWidth = oAreaDimensions.width;
-				iMaxHeight = oAreaDimensions.height - iHeightAsPadding;
+				iMaxHeight = oAreaDimensions.height;
 			} else {
 				iMaxWidth = this._percentOfSize(oAreaDimensions.width, 100 - 2 * HORIZONTAL_MARGIN); // 90% of available width
-				iMaxHeight = this._percentOfSize(oAreaDimensions.height, 100 - 2 * VERTICAL_MARGIN) - iHeightAsPadding; // 94% of available height minus paddings for headers and footer
+				iMaxHeight = this._percentOfSize(oAreaDimensions.height, 100 - 2 * VERTICAL_MARGIN); // 94% of available height minus paddings for headers and footer
 			}
 
 			return {
@@ -2261,18 +2251,12 @@ function(
 			 */
 			Dialog.prototype.ondblclick = function (e) {
 				if (isHeaderClicked(e.target)) {
-					var $dialogContent = this.$('cont');
 					this._bDisableRepositioning = false;
 					this._oManuallySetPosition = null;
 					this._oManuallySetSize = null;
 
 					//call the reposition
 					this.oPopup && this.oPopup._applyPosition(this.oPopup._oLastPosition, true);
-
-					//BCP: 1880238929
-					$dialogContent.css({
-						height: '100%'
-					});
 				}
 			};
 
@@ -2306,7 +2290,7 @@ function(
 					x: e.clientX,
 					y: e.clientY,
 					width: that._$dialog.width(),
-					height: that._$dialog.height(),
+					height: that._$dialog.find('> section').height(),
 					outerHeight : that._$dialog.outerHeight(),
 					position: {
 						x: oBoundingClientRect.x,
@@ -2316,22 +2300,9 @@ function(
 				var mouseMoveHandler;
 
 				function mouseUpHandler() {
-					var $dialog = that.$(),
-						$dialogContent = that.$('cont'),
-						dialogHeight,
-						dialogBordersHeight;
-
 					that.removeStyleClass("sapMDialogDisableSelection");
 					$w.off("mouseup", mouseUpHandler);
 					$w.off("mousemove", mouseMoveHandler);
-
-					if (bResize) {
-						// Take the calculated height of the dialog, so that the max-height is also applied.
-						// Else the content area will be bigger than the dialog and therefore will overflow.
-						dialogHeight = parseInt($dialog.height());
-						dialogBordersHeight = parseInt($dialog.css("border-top-width")) + parseInt($dialog.css("border-bottom-width"));
-						$dialogContent.height(dialogHeight + dialogBordersHeight);
-					}
 				}
 
 				if (isHeaderClicked(e.target) && this.getDraggable() || bResize) {
@@ -2385,9 +2356,10 @@ function(
 								event.clientX = oAreaDimensions.right - handleOffsetX;
 							}
 
+							const iHeight = initial.height + event.clientY - initial.y;
+
 							that._oManuallySetSize = {
-								width: initial.width + event.clientX - initial.x,
-								height: initial.height + event.clientY - initial.y
+								width: initial.width + event.clientX - initial.x
 							};
 
 							if (that._bRTL) {
@@ -2396,7 +2368,7 @@ function(
 							}
 
 							styles.width = that._oManuallySetSize.width;
-							styles.height = that._oManuallySetSize.height;
+							that._$dialog.find('> section').css({ flexBasis: iHeight });
 
 							that._$dialog.css(styles);
 						});
