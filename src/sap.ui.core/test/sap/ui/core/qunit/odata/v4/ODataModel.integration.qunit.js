@@ -36798,6 +36798,10 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 	// Move a parent's single leaf child to the same parent (SNOW: DINC0548859)
 	//
 	// Change the table's context and concurrently refresh it (SNOW: DINC0582522)
+	//
+	// When binding a transient context to an object page, late properties will be requested in the
+	// same $batch as the NodeID request.
+	// SNOW: DINC0830710
 [false, true].forEach(function (bResetViaModel) {
 	const sTitle = `Recursive Hierarchy: create new children, move 'em, model=${bResetViaModel}`;
 	QUnit.test(sTitle, function (assert) {
@@ -36832,6 +36836,9 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 	<Text id="name" text="{Name}"/>
 	<Text id="id" text="{_/NodeID}"/>
 </t:Table>
+</FlexBox>
+<FlexBox id="objectPage">
+	<Text text="{defaultChannel}"/>
 </FlexBox>`;
 		const that = this;
 
@@ -36983,7 +36990,7 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 				.expectRequest("#4 " + sBaseUrlNoFilter
 					+ "&$filter=ArtistID eq '1' and IsActiveEntity eq false&$select=_/NodeID", {
 					value : [{
-						"@odata.etag" : "n/a",
+						"@odata.etag" : "etag1.0",
 						_ : {
 							NodeID : "1,false"
 						}
@@ -37055,7 +37062,7 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 				.expectRequest("#6 " + sBaseUrlNoFilter
 					+ "&$filter=ArtistID eq '2' and IsActiveEntity eq false&$select=_/NodeID", {
 					value : [{
-						"@odata.etag" : "n/a",
+						"@odata.etag" : "etag2.0",
 						_ : {
 							NodeID : "2,false"
 						}
@@ -37658,11 +37665,16 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 					+ "&$filter=ArtistID eq '9' and IsActiveEntity eq false"
 					+ "&$select=_/NodeID", {
 					value : [{
-						"@odata.etag" : "n/a",
+						"@odata.etag" : "etag9.0",
 						_ : {
 							NodeID : "9,false"
 						}
 					}]
+				})
+				.expectRequest("#16 Artists(ArtistID='99',IsActiveEntity=false)"
+					+ "/_Friend(ArtistID='9',IsActiveEntity=false)?$select=defaultChannel", {
+					"@odata.etag" : "etag9.0",
+					defaultChannel : "foo"
 				});
 
 			// code under test (JIRA: CPOUI5ODATAV4-2355)
@@ -37673,8 +37685,13 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 
 			assert.strictEqual(oNewRoot.getIndex(), 0);
 
+			// code under test (SNOW: DINC0830710)
+			that.oView.byId("objectPage").setBindingContext(oNewRoot);
+
 			return Promise.all([
-				oNewRoot.created(),
+				oNewRoot.created().then(function () {
+					assert.strictEqual(oNewRoot.getProperty("_/NodeID"), "9,false");
+				}),
 				that.waitForChanges(assert, "create new root")
 			]);
 		}).then(function () {
@@ -48608,6 +48625,10 @@ make root = ${bMakeRoot}`;
 	// Create new child and cancel immediately (JIRA: CPOUI5ODATAV4-2272)
 	// Also delete instead of cancelling (JIRA: CPOUI5ODATAV4-2274)
 	// Delete a created persisted child (JIRA: CPOUI5ODATAV4-2224)
+	//
+	// When binding a transient context to an object page, late properties will be requested in the
+	// same $batch as the NodeID request.
+	// SNOW: DINC0830710
 [false, true].forEach(function (bDelete) {
 	const sTitle = `Recursive Hierarchy: create new children & placeholders, delete=${bDelete}`;
 
@@ -48626,7 +48647,10 @@ make root = ${bMakeRoot}`;
 	<Text text="{= %{@$ui5.node.level} }"/>
 	<Text id="id" text="{ArtistID}"/>\
 	<Text id="name" text="{Name}"/>
-</t:Table>`;
+</t:Table>
+<FlexBox id="objectPage">
+	<Text text="{defaultChannel}"/>
+</FlexBox>`;
 		const that = this;
 
 		this.expectRequest("#1 Artists?$apply=com.sap.vocabularies.Hierarchy.v1.TopLevels("
@@ -48775,7 +48799,7 @@ make root = ${bMakeRoot}`;
 				})
 				.expectChange("id", [, "12"])
 				.expectChange("name", [, "Second new child"])
-				.expectRequest("Artists?$apply=descendants($root/Artists,OrgChart,_/NodeID"
+				.expectRequest("#6 Artists?$apply=descendants($root/Artists,OrgChart,_/NodeID"
 					+ ",filter(ArtistID eq '0' and IsActiveEntity eq false),1)"
 					+ "&$filter=ArtistID eq '12' and IsActiveEntity eq false&$select=_/NodeID", {
 					value : [{
@@ -48784,6 +48808,11 @@ make root = ${bMakeRoot}`;
 							NodeID : "12,true"
 						}
 					}]
+				})
+				.expectRequest("#6 Artists(ArtistID='12',IsActiveEntity=false)"
+					+ "?$select=defaultChannel", {
+					"@odata.etag" : "etag2.0",
+					defaultChannel : "foo"
 				});
 
 			// code under test
@@ -48792,8 +48821,13 @@ make root = ${bMakeRoot}`;
 				Name : "2nd new child"
 			}, /*bSkipRefresh*/true);
 
+			// code under test (SNOW: DINC0830710)
+			that.oView.byId("objectPage").setBindingContext(oChild);
+
 			return Promise.all([
-				oChild.created(),
+				oChild.created().then(function () {
+					assert.strictEqual(oChild.getProperty("_/NodeID"), "12,true");
+				}),
 				that.waitForChanges(assert, "create 2nd child")
 			]);
 		}).then(function () {

@@ -609,7 +609,7 @@ sap.ui.define([
 
 		addElement(iIndex, /*iRank*/undefined);
 
-		return oPromise.then(async () => {
+		return oPromise.then(() => {
 			_Helper.removeByPath(this.mPostRequests, sTransientPredicate, oEntityData);
 			aElements.$byPredicate[_Helper.getPrivateAnnotation(oEntityData, "predicate")]
 				= oEntityData;
@@ -622,16 +622,13 @@ sap.ui.define([
 			// Note: key predicate required
 			this.oTreeState.setOutOfPlace(oEntityData, oParentNode);
 
-			if (oCache === this.oFirstLevel && this.oAggregation.expandTo > 1) {
-				const [iRank] = await Promise.all([
+			_Helper.setPrivateAnnotation(oEntityData, "additionalPromise",
+				oCache === this.oFirstLevel && this.oAggregation.expandTo > 1
+				? Promise.all([
 					this.requestRank(oEntityData, oGroupLock),
 					this.requestNodeProperty(oEntityData, oGroupLock, /*bDropFilter*/true)
-				]);
-
-				completeCreation(iIndex, iRank);
-			} else {
-				await this.requestNodeProperty(oEntityData, oGroupLock, /*bDropFilter*/true);
-			}
+				]).then(([iRank]) => completeCreation(iIndex, iRank))
+				: this.requestNodeProperty(oEntityData, oGroupLock, /*bDropFilter*/true));
 
 			return oEntityData;
 		});
@@ -2384,8 +2381,14 @@ sap.ui.define([
 			return; // already available
 		}
 
-		await this.requestProperties(oElement, [this.oAggregation.$NodeProperty], oGroupLock, true,
+		const aSelect = [this.oAggregation.$NodeProperty];
+		const oResult = await this.requestProperties(oElement, aSelect, oGroupLock, false,
 			bDropFilter);
+
+		if (oResult) {
+			_Helper.updateSelected(this.mChangeListeners,
+				_Helper.getPrivateAnnotation(oElement, "predicate"), oElement, oResult, aSelect);
+		}
 	};
 
 	/**

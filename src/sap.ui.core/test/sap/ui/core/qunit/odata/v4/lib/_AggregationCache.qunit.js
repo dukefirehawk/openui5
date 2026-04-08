@@ -6052,6 +6052,7 @@ sap.ui.define([
 			});
 		const fnSubmitCallback = sinon.spy();
 		let fnNewSubmitCallback;
+		let oAdditionalPromise;
 		this.mock(oCollectionCache).expects("create")
 			.withExactArgs("~oGroupLock~", "~oPostPathPromise~", "~sPath~",
 				"~sTransientPredicate~", {bar : "~bar~", foo : "~foo~"}, bAtEndOfCreated,
@@ -6105,6 +6106,12 @@ sap.ui.define([
 									resolve0();
 								});
 							}));
+						oHelperMock.expects("setPrivateAnnotation").exactly(bAtEndOfCreated ? 0 : 1)
+							.withExactArgs(sinon.match.same(oEntityData), "additionalPromise",
+								sinon.match(function (oPromise) {
+									oAdditionalPromise = oPromise;
+									return oPromise instanceof Promise;
+								}));
 						const oRemoveElementExpectation
 							= that.mock(oCache.oFirstLevel).expects("removeElement")
 							.exactly(iCallCount).withExactArgs(0);
@@ -6161,7 +6168,12 @@ sap.ui.define([
 		});
 		assert.strictEqual(oResult.isPending(), true);
 
-		return oResult.then(function (oEntityData0) {
+		return oResult.then(async function (oEntityData0) {
+			assert.strictEqual(bNodePropertyCompleted, false,
+				"#requestNodeProperty - not yet resolved");
+
+			await oAdditionalPromise; // await #requestNodeProperty
+
 			assert.strictEqual(oEntityData0, oEntityData);
 			assert.deepEqual(oEntityData, {
 				"@$ui5._" : {postBody : oPostBody, predicate : "('ABC')"},
@@ -6173,8 +6185,7 @@ sap.ui.define([
 				"('42')" : oParentNode,
 				"('ABC')" : oEntityData
 			});
-			assert.strictEqual(bNodePropertyCompleted, !bAtEndOfCreated,
-				"await #requestNodeProperty");
+			assert.strictEqual(bNodePropertyCompleted, !bAtEndOfCreated);
 			if (oCountPromise) {
 				assert.ok(oCache.oCountPromise.$restore.notCalled, "not yet restored");
 			} else {
@@ -6745,22 +6756,37 @@ sap.ui.define([
 	});
 
 	//*********************************************************************************************
-	QUnit.test("requestNodeProperty", async function (assert) {
+[0, 1].forEach(function (iCase) { // 0: no result, 1: result available
+	QUnit.test("requestNodeProperty #" + iCase, async function (assert) {
 		const oCache = _AggregationCache.create(this.oRequestor, "Foo", "", {}, {
 			hierarchyQualifier : "X",
 			$NodeProperty : "path/to/NodeID"
 		});
 		this.mock(_Helper).expects("drillDown").withExactArgs("~oElement~", "path/to/NodeID")
 			.returns(undefined);
+		let bRequestPropertiesResolved;
 		this.mock(oCache).expects("requestProperties")
-			.withExactArgs("~oElement~", ["path/to/NodeID"], "~oGroupLock~", true, "~bDropFilter~")
-			.resolves(undefined);
+			.withExactArgs("~oElement~", ["path/to/NodeID"], "~oGroupLock~", false, "~bDropFilter~")
+			.returns(new Promise(function (resolve) {
+				setTimeout(function () {
+					bRequestPropertiesResolved = true;
+					resolve(iCase ? "~oResult~" : undefined);
+				});
+			}));
+		this.mock(_Helper).expects("getPrivateAnnotation").exactly(iCase)
+			.withExactArgs("~oElement~", "predicate").returns("~predicate~");
+		this.mock(_Helper).expects("updateSelected").exactly(iCase)
+			.withExactArgs(sinon.match.same(oCache.mChangeListeners), "~predicate~", "~oElement~",
+				iCase ? "~oResult~" : undefined, ["path/to/NodeID"]);
 
 		assert.strictEqual(
 			// code under test
 			await oCache.requestNodeProperty("~oElement~", "~oGroupLock~", "~bDropFilter~"),
 			undefined, "without a defined result");
+
+		assert.strictEqual(bRequestPropertiesResolved, true);
 	});
+});
 
 	//*********************************************************************************************
 	QUnit.test("requestNodeProperty: already available", async function (assert) {
@@ -6771,6 +6797,7 @@ sap.ui.define([
 		this.mock(_Helper).expects("drillDown").withExactArgs("~oElement~", "path/to/NodeID")
 			.returns(""); // edge case :-)
 		this.mock(oCache).expects("requestProperties").never();
+		this.mock(_Helper).expects("updateSelected").never();
 		this.mock(_Helper).expects("inheritPathValue").never();
 
 		assert.strictEqual(
