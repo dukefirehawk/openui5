@@ -22927,16 +22927,22 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 	// Scenario: Create a draft at the end, save it and replace it with the active entity. Start
 	// deleting it, but cancel the deletion. See that it is still at the end.
 	// JIRA: CPOUI5ODATAV4-1629
-	QUnit.test("CPOUI5ODATAV4-1629: ODLB: create, delete & doReplaceWith", function (assert) {
+	//
+	// Check that a header message on POST targets the non-transient path (SNOW: DINC0804629)
+["update", "$direct"].forEach((sUpdateGroupId) => {
+	const sTitle = "CPOUI5ODATAV4-1629: ODLB: create, delete & doReplaceWith; updateGroupId : "
+		+ sUpdateGroupId;
+
+	QUnit.test(sTitle, function (assert) {
 		var sAction = "special.cases.ActivationAction",
 			oBinding,
 			oContext,
 			oModel = this.createSpecialCasesModel(
-				{autoExpandSelect : true, updateGroupId : "update"}),
+				{autoExpandSelect : true, updateGroupId : sUpdateGroupId}),
 			oPromise,
 			sView = '\
 <Table id="list" items="{/Artists}">\
-	<Text id="id" text="{ArtistID}"/>\
+	<Input id="id" value="{ArtistID}"/>\
 	<Text id="active" text="{IsActiveEntity}"/>\
 </Table>',
 			that = this;
@@ -22950,20 +22956,46 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 			.expectChange("active", ["Yes"]);
 
 		return this.createView(assert, sView, oModel).then(function () {
+			const oMessage = {
+				code : "SNOW: DINC0804629",
+				longtextUrl : "LongText('0815')",
+				message : "Just A Message",
+				numericSeverity : 1,
+				target : "ArtistID"
+			};
 			that.expectChange("id", [, ""])
 				.expectChange("active", [, null])
-				.expectRequest("POST Artists", {ArtistID : "new", IsActiveEntity : false})
+				.expectRequest("POST Artists", /*vResponse*/{
+					ArtistID : "new",
+					IsActiveEntity : false
+				}, /*mResponseHeaders*/{
+					"sap-messages" : JSON.stringify([oMessage])
+				})
 				.expectChange("id", [, "new"])
-				.expectChange("active", [, "No"]);
+				.expectChange("active", [, "No"])
+				.expectMessages([{
+					code : "SNOW: DINC0804629",
+					descriptionUrl : "/special/cases/LongText('0815')",
+					message : "Just A Message",
+					persistent : true,
+					targets : ["/Artists(ArtistID='new',IsActiveEntity=false)/ArtistID"],
+					technicalDetails : {
+						originalMessage : oMessage
+					},
+					type : "Success"
+				}]);
 
 			oBinding = that.oView.byId("list").getBinding("items");
 			oContext = oBinding.create({}, true, /*bAtEnd*/true);
 
 			return Promise.all([
-				oModel.submitBatch("update"),
+				sUpdateGroupId === "$direct" || oModel.submitBatch(sUpdateGroupId),
 				oContext.created(),
 				that.waitForChanges(assert, "create draft at end")
 			]);
+		}).then(function () {
+			return that.checkValueState(assert, that.oView.byId("list").getItems()[1].getCells()[0],
+				"Success", "Just A Message");
 		}).then(function () {
 			var oAction = oModel.bindContext(sAction + "(...)", oContext);
 
@@ -22976,6 +23008,10 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 				that.waitForChanges(assert, "replace with active")
 			]);
 		}).then(function (aResult) {
+			if (sUpdateGroupId === "$direct") {
+				throw Error("STOP"); // $direct was only about the message, skip trouble w/ DELETE
+			}
+
 			oPromise = aResult[0].delete(); // delete the RVC
 
 			// It's not possible to synchronously reset after delete, so wait a short moment.
@@ -22984,7 +23020,7 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 			that.expectCanceledError(
 				"Failed to delete /Artists(ArtistID='new',IsActiveEntity=true)",
 				"Request canceled: DELETE Artists(ArtistID='new',IsActiveEntity=true);"
-				+ " group: update"
+				+ " group: " + sUpdateGroupId
 			);
 			that.expectChange("id", [, "new"])
 				.expectChange("active", [, "Yes"]);
@@ -23002,8 +23038,11 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 				"/Artists(ArtistID='new',IsActiveEntity=true)"
 			], "correct order");
 			assert.strictEqual(oBinding.getLength(), 2, "correct length");
+		}).catch(function (oError) {
+			assert.strictEqual(oError.message, "STOP");
 		});
 	});
+});
 
 	//*********************************************************************************************
 	// Scenario: Deferred deletion of a row context (oRowContext) and a hidden kept-alive context
