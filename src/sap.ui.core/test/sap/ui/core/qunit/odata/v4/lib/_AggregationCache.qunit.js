@@ -6884,6 +6884,7 @@ sap.ui.define([
 				return Promise.resolve();
 			});
 		this.mock(oCache).expects("readCount").withExactArgs("~oGroupLock~").resolves("n/a");
+		this.mock(oCache).expects("readGrandTotal").withExactArgs("~oGroupLock~").resolves("n/a");
 
 		// code under test
 		const oDeletePromise = oCache._delete("~oGroupLock~", "~editUrl~", "2", "n/a", fnCallback);
@@ -6934,6 +6935,7 @@ sap.ui.define([
 				return Promise.resolve();
 			});
 		this.mock(oCache).expects("readCount").withExactArgs("~oGroupLock~").resolves("n/a");
+		this.mock(oCache).expects("readGrandTotal").withExactArgs("~oGroupLock~").resolves("n/a");
 
 		// code under test
 		return oCache._delete("~oGroupLock~", "~editUrl~", "2", "n/a", fnCallback);
@@ -6954,6 +6956,7 @@ sap.ui.define([
 				{"If-Match" : sinon.match.same(oElement)})
 			.returns(Promise.reject("~error~"));
 		this.mock(oCache).expects("readCount").withExactArgs("~oGroupLock~");
+		this.mock(oCache).expects("readGrandTotal").withExactArgs("~oGroupLock~");
 
 		// code under test
 		const oDeletePromise = oCache._delete("~oGroupLock~", "~editUrl~", "2", "n/a", fnCallback);
@@ -6994,6 +6997,7 @@ sap.ui.define([
 			.withExactArgs("~oGroupLock~", "~editUrl~", "~transientPredicate~")
 			.returns("~promise~");
 		this.mock(oCache).expects("readCount").never();
+		this.mock(oCache).expects("readGrandTotal").never();
 
 		assert.strictEqual(
 			// code under test
@@ -7018,6 +7022,7 @@ sap.ui.define([
 		this.mock(oCache).expects("removeElement").never();
 		this.mock(_Helper).expects("updateAll").never();
 		this.mock(oCache).expects("readCount").never();
+		this.mock(oCache).expects("readGrandTotal").never();
 
 		assert.throws(function () {
 			oCache._delete("~oGroupLock~", "edit/url", "2");
@@ -7032,6 +7037,7 @@ sap.ui.define([
 		this.mock(oCache).expects("removeElement").never();
 		this.mock(_Helper).expects("updateAll").never();
 		this.mock(oCache).expects("readCount").never();
+		this.mock(oCache).expects("readGrandTotal").never();
 
 		assert.throws(function () {
 			oCache._delete("~oGroupLock~", "~sEditUrl~", "('1')");
