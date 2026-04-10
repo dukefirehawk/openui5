@@ -207,7 +207,7 @@ function(
 			assert.throws(function() {
 				AddNewDataSource.applyChange(this.oManifestDataSourcesEmpty, oChange);
 			}, Error("The ID of your dataSource is empty."),
-			"throws error that empty data source name is not allwoed");
+			"throws error that empty data source name is not allowed");
 		});
 
 		QUnit.test("when calling '_applyChange' by adding a dataSource without mandatory property", function(assert) {
@@ -599,7 +599,7 @@ function(
 
 			assert.throws(function() {
 				AddNewDataSource.applyChange(this.oManifestWithExistingDataSources, oChange);
-			}, Error("When adding two data sources it is only allwoed to add a data source with type 'OData' and the other one must be of type 'ODataAnnotation'."),
+			}, Error("When adding two data sources it is only allowed to add a data source with type 'OData' and the other one must be of type 'ODataAnnotation'."),
 			"throws error that when adding two data source one of them needs to be of type OData and the other of type ODataAnnotation");
 		});
 
@@ -923,6 +923,162 @@ function(
 				AddNewDataSource.applyChange(this.oManifestWithExistingDataSources, oChange);
 			}, Error("Property 'annotations' must be of type 'array'."),
 			"throws error that the annotations array is of wrong type");
+		});
+
+		QUnit.test("when calling '_applyChange' by adding a single dataSource of type JSON", function(assert) {
+			const oChange = new AppDescriptorChange({
+				flexObjectMetadata: {
+					changeType: "appdescr_app_addNewDataSource"
+				},
+				layer: Layer.CUSTOMER,
+				content: {
+					dataSource: {
+						"customer.fancy_dataSource": {
+							uri: "/api/data.json",
+							type: "JSON"
+						}
+					}
+				}
+			});
+
+			const oNewManifest = AddNewDataSource.applyChange(this.oManifestDataSourcesEmpty, oChange);
+			assert.equal(Object.keys(oNewManifest["sap.app"].dataSources).length, 1, "data source count is correct");
+			assert.deepEqual(oNewManifest["sap.app"].dataSources, {
+				"customer.fancy_dataSource": {
+					uri: "/api/data.json",
+					type: "JSON"
+				}
+			}, "data source is added correctly");
+		});
+
+		QUnit.test("when calling '_applyChange' by adding a single dataSource of type XML", function(assert) {
+			const oChange = new AppDescriptorChange({
+				flexObjectMetadata: {
+					changeType: "appdescr_app_addNewDataSource"
+				},
+				layer: Layer.CUSTOMER,
+				content: {
+					dataSource: {
+						"customer.fancy_dataSource": {
+							uri: "/api/data.xml",
+							type: "XML"
+						}
+					}
+				}
+			});
+
+			const oNewManifest = AddNewDataSource.applyChange(this.oManifestDataSourcesEmpty, oChange);
+			assert.equal(Object.keys(oNewManifest["sap.app"].dataSources).length, 1, "data source count is correct");
+			assert.deepEqual(oNewManifest["sap.app"].dataSources, {
+				"customer.fancy_dataSource": {
+					uri: "/api/data.xml",
+					type: "XML"
+				}
+			}, "data source is added correctly");
+		});
+
+		QUnit.test("when calling '_applyChange' by adding a single dataSource of type INA", function(assert) {
+			const oChange = new AppDescriptorChange({
+				flexObjectMetadata: {
+					changeType: "appdescr_app_addNewDataSource"
+				},
+				layer: Layer.CUSTOMER,
+				content: {
+					dataSource: {
+						"customer.fancy_dataSource": {
+							uri: "/api/ina",
+							type: "INA"
+						}
+					}
+				}
+			});
+
+			const oNewManifest = AddNewDataSource.applyChange(this.oManifestDataSourcesEmpty, oChange);
+			assert.equal(Object.keys(oNewManifest["sap.app"].dataSources).length, 1, "data source count is correct");
+			assert.deepEqual(oNewManifest["sap.app"].dataSources, {
+				"customer.fancy_dataSource": {
+					uri: "/api/ina",
+					type: "INA"
+				}
+			}, "data source is added correctly");
+		});
+
+		QUnit.test("when calling '_applyChange' by adding a single dataSource of type http", function(assert) {
+			const oChange = new AppDescriptorChange({
+				flexObjectMetadata: {
+					changeType: "appdescr_app_addNewDataSource"
+				},
+				layer: Layer.CUSTOMER,
+				content: {
+					dataSource: {
+						"customer.fancy_dataSource": {
+							uri: "/api/endpoint",
+							type: "http"
+						}
+					}
+				}
+			});
+
+			const oNewManifest = AddNewDataSource.applyChange(this.oManifestDataSourcesEmpty, oChange);
+			assert.equal(Object.keys(oNewManifest["sap.app"].dataSources).length, 1, "data source count is correct");
+			assert.deepEqual(oNewManifest["sap.app"].dataSources, {
+				"customer.fancy_dataSource": {
+					uri: "/api/endpoint",
+					type: "http"
+				}
+			}, "data source is added correctly");
+		});
+
+		QUnit.test("when calling '_applyChange' by adding a single dataSource of type FHIR", function(assert) {
+			const oChange = new AppDescriptorChange({
+				flexObjectMetadata: {
+					changeType: "appdescr_app_addNewDataSource"
+				},
+				layer: Layer.CUSTOMER,
+				content: {
+					dataSource: {
+						"customer.fancy_dataSource": {
+							uri: "/api/fhir",
+							type: "FHIR"
+						}
+					}
+				}
+			});
+
+			const oNewManifest = AddNewDataSource.applyChange(this.oManifestDataSourcesEmpty, oChange);
+			assert.equal(Object.keys(oNewManifest["sap.app"].dataSources).length, 1, "data source count is correct");
+			assert.deepEqual(oNewManifest["sap.app"].dataSources, {
+				"customer.fancy_dataSource": {
+					uri: "/api/fhir",
+					type: "FHIR"
+				}
+			}, "data source is added correctly");
+		});
+
+		QUnit.test("when calling '_applyChange' by adding a single dataSource of type WebSocket", function(assert) {
+			const oChange = new AppDescriptorChange({
+				flexObjectMetadata: {
+					changeType: "appdescr_app_addNewDataSource"
+				},
+				layer: Layer.CUSTOMER,
+				content: {
+					dataSource: {
+						"customer.fancy_dataSource": {
+							uri: "/api/ws",
+							type: "WebSocket"
+						}
+					}
+				}
+			});
+
+			const oNewManifest = AddNewDataSource.applyChange(this.oManifestDataSourcesEmpty, oChange);
+			assert.equal(Object.keys(oNewManifest["sap.app"].dataSources).length, 1, "data source count is correct");
+			assert.deepEqual(oNewManifest["sap.app"].dataSources, {
+				"customer.fancy_dataSource": {
+					uri: "/api/ws",
+					type: "WebSocket"
+				}
+			}, "data source is added correctly");
 		});
 
 		QUnit.test("when calling '_applyChange' by adding one dataSource type http which contains annotations", function(assert) {
