@@ -3066,14 +3066,6 @@ sap.ui.define([
 			assert.ok(false, "Unexpected success");
 		}
 
-		function assertError(oResultError) {
-			assert.ok(oResultError instanceof Error);
-			assert.deepEqual(oResultError.error, oError.error);
-			assert.strictEqual(oResultError.message, oError.error.message);
-			assert.strictEqual(oResultError.status, 404);
-			assert.strictEqual(oResultError.statusText, "Not found");
-		}
-
 		aPromises.push(
 			oRequestor.request("GET", "ok", this.createGroupLock()).then(function (oResult) {
 				assert.deepEqual(oResult, {});
@@ -3081,7 +3073,7 @@ sap.ui.define([
 
 		aPromises.push(oRequestor.request("GET", "fail", this.createGroupLock())
 			.then(unexpected, function (oResultError) {
-				assertError(oResultError);
+				assert.strictEqual(oResultError, "~error~");
 			}));
 
 		aPromises.push(oRequestor.request("GET", "ok", this.createGroupLock())
@@ -3090,7 +3082,7 @@ sap.ui.define([
 				assert.strictEqual(oResultError.message,
 					"HTTP request was not processed because the previous request failed");
 				assert.strictEqual(oResultError.$reported, true);
-				assertError(oResultError.cause);
+				assert.strictEqual(oResultError.cause, "~error~");
 			}));
 
 		this.mock(oRequestor).expects("sendBatch").resolves(aBatchResult); // arguments don't matter
@@ -3099,6 +3091,10 @@ sap.ui.define([
 			.withExactArgs(sinon.match.same(aBatchResult[0].headers));
 		oModelInterfaceMock.expects("onHttpResponse")
 			.withExactArgs(sinon.match.same(aBatchResult[1].headers));
+		this.mock(_Helper).expects("createError")
+			.withExactArgs(sinon.match.same(aBatchResult[1]), "Communication error", "/fail",
+				"fail")
+			.returns("~error~");
 
 		// code under test
 		aPromises.push(oRequestor.processBatch("groupId").then(function (oResult) {
@@ -3127,17 +3123,9 @@ sap.ui.define([
 			assert.ok(false, "Unexpected success");
 		}
 
-		function assertError(oResultError) {
-			assert.ok(oResultError instanceof Error);
-			assert.deepEqual(oResultError.error, oError.error);
-			assert.strictEqual(oResultError.message, oError.error.message);
-			assert.strictEqual(oResultError.status, 404);
-			assert.strictEqual(oResultError.statusText, "Not found");
-		}
-
 		aPromises.push(oRequestor.request("PATCH", "fail", this.createGroupLock())
 			.then(unexpected, function (oResultError) {
-				assertError(oResultError);
+				assert.strictEqual(oResultError, "~error~");
 			}));
 
 		oRequestor.addChangeSet("groupId");
@@ -3149,7 +3137,7 @@ sap.ui.define([
 				assert.strictEqual(oResultError.message,
 					"HTTP request was not processed because the previous request failed");
 				assert.strictEqual(oResultError.$reported, true);
-				assertError(oResultError.cause);
+				assert.strictEqual(oResultError.cause, "~error~");
 			}));
 
 		aPromises.push(oRequestor.request("PATCH", "n/a", this.createGroupLock(), {"If-Match" : {}})
@@ -3158,12 +3146,16 @@ sap.ui.define([
 				assert.strictEqual(oResultError.message,
 					"HTTP request was not processed because the previous request failed");
 				assert.strictEqual(oResultError.$reported, true);
-				assertError(oResultError.cause);
+				assert.strictEqual(oResultError.cause, "~error~");
 			}));
 
 		this.mock(oRequestor).expects("sendBatch").resolves(aBatchResult); // arguments don't matter
 		this.mock(oModelInterface).expects("onHttpResponse")
 			.withExactArgs(sinon.match.same(aBatchResult[0].headers));
+		this.mock(_Helper).expects("createError")
+			.withExactArgs(sinon.match.same(aBatchResult[0]), "Communication error", "/fail",
+				"fail")
+			.returns("~error~");
 
 		// code under test
 		aPromises.push(oRequestor.processBatch("groupId").then(function (oResult) {
@@ -4871,7 +4863,17 @@ sap.ui.define([
 
 	//*****************************************************************************************
 	QUnit.test("reportHeaderMessages", function () {
-		var oHelperMock = this.mock(_Helper),
+		var aExpectedMessages = [{
+				"@$ui5.originalMessage" : "~clonedMessage0~",
+				code : "42",
+				message : "Test"
+			}, {
+				"@$ui5.originalMessage" : "~clonedMessage1~",
+				code : "43",
+				longtextUrl : "~longtextUrl~",
+				type : "Warning"
+			}],
+			oHelperMock = this.mock(_Helper),
 			aMessages = [{
 				code : "42",
 				message : "Test"
@@ -4884,14 +4886,16 @@ sap.ui.define([
 			oRequestor = _Requestor.create("/sServiceUrl/", oModelInterface, {}, {}, "4.0"),
 			sResourcePath = "Product(42)/to_bar";
 
+		oHelperMock.expects("clone").withExactArgs(aMessages[0]).returns("~clonedMessage0~");
+		oHelperMock.expects("clone").withExactArgs(aMessages[1]).returns("~clonedMessage1~");
 		oHelperMock.expects("makeAbsoluteLongtextUrl")
-			.withExactArgs(aMessages[0], "/sServiceUrl/~sRequestUrl~");
+			.withExactArgs(aExpectedMessages[0], "/sServiceUrl/~sRequestUrl~");
 		oHelperMock.expects("makeAbsoluteLongtextUrl")
-			.withExactArgs(aMessages[1], "/sServiceUrl/~sRequestUrl~");
+			.withExactArgs(aExpectedMessages[1], "/sServiceUrl/~sRequestUrl~");
 		oHelperMock.expects("matchEndsWithTransientPredicate").withExactArgs(sResourcePath)
 			.returns(null);
 		this.mock(oModelInterface).expects("reportTransitionMessages")
-			.withExactArgs(aMessages, sResourcePath);
+			.withExactArgs(aExpectedMessages, sResourcePath);
 
 		// code under test
 		oRequestor.reportHeaderMessages(sResourcePath, sMessages, null, "~sRequestUrl~");
@@ -4899,7 +4903,12 @@ sap.ui.define([
 
 	//*****************************************************************************************
 	QUnit.test("reportHeaderMessages with $uid", function () {
-		var aMessages = [{
+		var aExpectedMessages = [{
+				"@$ui5.originalMessage" : "~clonedMessage~",
+				code : "42",
+				message : "Test"
+			}],
+			aMessages = [{
 				code : "42",
 				message : "Test"
 			}],
@@ -4908,8 +4917,9 @@ sap.ui.define([
 			sResourcePath = "Product($uid=1-23)",
 			mTypeForMetaPath;
 
+		this.mock(_Helper).expects("clone").withExactArgs(aMessages[0]).returns("~clonedMessage~");
 		this.mock(_Helper).expects("makeAbsoluteLongtextUrl")
-			.withExactArgs(aMessages[0], "/sServiceUrl/~sRequestUrl~");
+			.withExactArgs(aExpectedMessages[0], "/sServiceUrl/~sRequestUrl~");
 		this.mock(_Helper).expects("matchEndsWithTransientPredicate").withExactArgs(sResourcePath)
 			.returns(["($uid=1-23)"]);
 		this.mock(_Helper).expects("getMetaPath").withExactArgs("~sRequestUrl~")
@@ -4924,7 +4934,7 @@ sap.ui.define([
 				return mTypeForMetaPath0 === mTypeForMetaPath;
 			})).returns("(foo)");
 		this.mock(oModelInterface).expects("reportTransitionMessages")
-			.withExactArgs(aMessages, "Product(foo)");
+			.withExactArgs(aExpectedMessages, "Product(foo)");
 
 		// code under test
 		oRequestor.reportHeaderMessages(sResourcePath, sMessages, "~oResponse~", "~sRequestUrl~");
@@ -4934,6 +4944,7 @@ sap.ui.define([
 	QUnit.test("reportHeaderMessages without messages", function () {
 		var oRequestor = _Requestor.create("/", oModelInterface, {}, {}, "4.0");
 
+		this.mock(_Helper).expects("clone").never();
 		this.mock(_Helper).expects("makeAbsoluteLongtextUrl").never();
 		this.mock(_Helper).expects("matchEndsWithTransientPredicate").never();
 		this.mock(oModelInterface).expects("reportTransitionMessages").never();
@@ -4945,13 +4956,19 @@ sap.ui.define([
 	//*****************************************************************************************
 	QUnit.test("reportHeaderMessages for 'R#V#C'", function () {
 		const oRequestor = _Requestor.create("/", oModelInterface, {}, {}, "4.0");
-		this.mock(_Helper).expects("makeAbsoluteLongtextUrl").never();
-		this.mock(_Helper).expects("matchEndsWithTransientPredicate").never();
+		const oHelperMock = this.mock(_Helper);
+		oHelperMock.expects("makeAbsoluteLongtextUrl").never();
+		oHelperMock.expects("matchEndsWithTransientPredicate").never();
 		this.mock(oModelInterface).expects("reportTransitionMessages").never();
 		const aMessages = [{code : "42", message : "Test"}, {code : "43", type : "Warning"}];
 		const sMessages = JSON.stringify(aMessages);
+		oHelperMock.expects("clone").withExactArgs(aMessages[0]).returns("~clonedMessage0~");
+		oHelperMock.expects("clone").withExactArgs(aMessages[1]).returns("~clonedMessage1~");
 		this.mock(_Helper).expects("setPrivateAnnotation")
-			.withExactArgs("~oResponse~", "headerMessages", aMessages);
+			.withExactArgs("~oResponse~", "headerMessages", [
+				{"@$ui5.originalMessage" : "~clonedMessage0~", code : "42", message : "Test"},
+				{"@$ui5.originalMessage" : "~clonedMessage1~", code : "43", type : "Warning"}
+			]);
 
 		// code under test
 		oRequestor.reportHeaderMessages("R#V#C", sMessages, "~oResponse~");

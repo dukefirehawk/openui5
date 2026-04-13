@@ -14497,7 +14497,8 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 						target : "n/a", // must be ignored because of missing ContentID
 						"@SAP__common.numericSeverity" : 2
 					}]
-				});
+				}),
+				oErrorResponse = _Helper.clone(oError.error);
 
 			aItems = that.oView.byId("table").getItems();
 
@@ -14517,6 +14518,10 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 					persistent : true,
 					target : "/SalesOrderList('41')",
 					technical : true,
+					technicalDetails : {
+						httpStatus : 500,
+						originalMessage : oErrorResponse
+					},
 					type : "Error"
 				}, {
 					code : "CODE0",
@@ -33395,6 +33400,12 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 	QUnit.test(sTitle, function (assert) {
 		var oContext,
 			oListBinding,
+			oMessage = {
+				message : "You're looking younger than ever!",
+				numericSeverity : 2,
+				target : "AGE",
+				transition : false
+			},
 			oModel = this.createTeaBusiModel({autoExpandSelect : true}),
 			oTable,
 			sView = '\
@@ -33440,12 +33451,9 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 					ROOM_ID : "3.0",
 					Name : "Lambda",
 					__CT__FAKE__Message : {
-						__FAKE__Messages : [{
-							message : "You're looking younger than ever!",
-							numericSeverity : 2,
-							target : "AGE",
-							transition : false
-						}]
+						// clone to make sure the original message cannot be modified and can be
+						// safely used for comparison below
+						__FAKE__Messages : [{...oMessage}]
 					}
 				})
 				.expectChange("age", "57")
@@ -33454,6 +33462,9 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 					message : "You're looking younger than ever!",
 					persistent : false,
 					target : "/EMPLOYEES('3')/AGE",
+					technicalDetails : {
+						originalMessage : oMessage
+					},
 					type : "Information"
 				}]);
 
@@ -33537,12 +33548,7 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 					Name : "Lambda",
 					ROOM_ID : "3.0",
 					__CT__FAKE__Message : {
-						__FAKE__Messages : [{
-							message : "You're looking younger than ever!",
-							numericSeverity : 2,
-							target : "AGE",
-							transition : false
-						}]
+						__FAKE__Messages : [oMessage]
 					}
 				}, "merged");
 
@@ -33656,12 +33662,7 @@ constraints:{'maxLength':5},formatOptions:{'parseKeepsEmptyString':true}\
 					Name : "Lambda #1",
 					ROOM_ID : "3.0",
 					__CT__FAKE__Message : {
-						__FAKE__Messages : [{
-							message : "You're looking younger than ever!",
-							numericSeverity : 2,
-							target : "AGE",
-							transition : false
-						}]
+						__FAKE__Messages : [oMessage]
 					}
 				}, "merged again");
 		});
