@@ -1,0 +1,12 @@
+{
+  "1.148.0": {
+    "date": "April 2026",
+    "notes": [
+      {
+        "id": "81c2cbdd556818f2506547e948f739ced28a7448",
+        "type": "FIX",
+        "text": " Component.create: Enforce async behavior of API"
+      }
+    ]
+  }
+}

@@ -3,6 +3,21 @@
     "date": "April 2026",
     "notes": [
       {
+        "id": "70f60f0a97030feff5f1fdaaa912b2fc5574a55c",
+        "type": "FIX",
+        "text": " sap.m.Text: Stabilize tests"
+      },
+      {
+        "id": "532b6b7a7f73a3c7e249741886bd221b0856f9a2",
+        "type": "FIX",
+        "text": " sap.m.Input: ACC sample enhancement"
+      },
+      {
+        "id": "1da47644aec72abf1502bc78134581be5310d9eb",
+        "type": "FIX",
+        "text": " sap.m.SelectDialog/TableSelectDialog: Prevent focus jump on late binding"
+      },
+      {
         "id": "84efc0c66cf12d655984a3714bcbd0f07a131ed9",
         "type": "FIX",
         "text": " sap.m.Popover: Prevent shifting of root html element to ensure correct positioning"
@@ -18,9 +33,19 @@
         "text": " sap.m.PlanningCalendar, SPC: header higher z-index is only"
       },
       {
+        "id": "0efa4b48fe963853cce0e77a1089b5617220c9aa",
+        "type": "FIX",
+        "text": " sap.m.Dialog: Fix Dialog button overflow and height calculation issues"
+      },
+      {
         "id": "eb657646e389028382004c1e8ef42d63d9106e92",
         "type": "FIX",
         "text": " sap.m.TimePicker: remove redundant placeholder announcement"
+      },
+      {
+        "id": "12d6be7e83b7634f11e2d3b824e18fd77912d2c9",
+        "type": "FIX",
+        "text": " sap.m.GenericTag: Update Sample"
       }
     ]
   }

@@ -6,11 +6,6 @@
         "id": "66100fcac0301c5e6ee7009f2e5cd266373388b8",
         "type": "FIX",
         "text": " sap.m.Carousel: ensure image scales below 240px viewport width"
-      },
-      {
-        "id": "084eb44f12dded2b61ab80fda464e6c2dbd9f1e0",
-        "type": "FIX",
-        "text": " sap.f.DynamicPage: hover of expand/collapse and pin button fixed"
       }
     ]
   }

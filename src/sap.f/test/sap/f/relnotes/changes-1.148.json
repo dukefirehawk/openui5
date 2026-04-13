@@ -6,6 +6,11 @@
         "id": "e0359e7bc2cb2a9287af5878c66f229668d0a293",
         "type": "FIX",
         "text": " sap.f.AvatarGroup: fix infinite re-rendering due to sub-pixel rounding"
+      },
+      {
+        "id": "53e032d6112d5fcc0dbf92b408f7203d79ffa97b",
+        "type": "FIX",
+        "text": " sap.f.ShellBar: Update sample"
       }
     ]
   }
